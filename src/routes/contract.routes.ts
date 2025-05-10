@@ -1,7 +1,7 @@
 import { Router } from 'express';
+import { IContractController } from 'types';
 import { validateRequest } from 'middlewares/validate-request';
 import { validateJuridicalPerson } from '@schemas/index';
-import { IContractController } from 'types';
 
 interface ContractRouterDependencies {
   contractController: IContractController;

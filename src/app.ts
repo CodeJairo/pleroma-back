@@ -2,9 +2,11 @@ import express from 'express';
 import { AppDependencies } from 'types';
 import config from './config/config';
 import { createContractRouter } from '@routes/index';
+import { limiter } from '@middlewares/rate-limit';
 
 export const createApp = ({ contractController }: AppDependencies) => {
   const app = express();
+  app.use(limiter);
   app.use(express.json());
   app.disable('x-powered-by');
 

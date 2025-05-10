@@ -1,4 +1,4 @@
-import z from 'zod';
+import z, { SafeParseReturnType } from 'zod';
 
 const JuridicalPersonSchema = z.object({
   // Juridical Person information
@@ -17,6 +17,18 @@ const JuridicalPersonSchema = z.object({
       invalid_type_error: 'Business document type must be a string',
     })
     .default('NIT'),
+
+  businessDocumentNumber: z
+    .string({
+      required_error: 'Business Document number is required',
+    })
+    .min(5, {
+      message: 'Business Document number must be at least 5 characters long',
+    })
+    .max(20, { message: 'Business Document number must be less than 20 characters long' })
+    .regex(/^\d+$/, {
+      message: 'Business Document number must be a number',
+    }),
 
   // Legal representative information
 
@@ -117,7 +129,7 @@ const JuridicalPersonSchema = z.object({
     required_error: 'Account type is required',
   }),
 
-  accountNumber: z
+  BankAccountNumber: z
     .string({
       invalid_type_error: 'Account number must be a string',
       required_error: 'Account number is required',
@@ -129,7 +141,9 @@ const JuridicalPersonSchema = z.object({
     }),
 });
 
-export function validateJuridicalPerson(data: unknown) {
+export function validateJuridicalPerson(
+  data: unknown
+): SafeParseReturnType<unknown, z.infer<typeof JuridicalPersonSchema>> {
   return JuridicalPersonSchema.safeParse(data);
 }
 

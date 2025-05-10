@@ -15,21 +15,23 @@ export interface IContractModel {
 
 export interface IJuridicalPerson {
   businessName: string;
+  businessDocumentType: 'NIT';
+  businessDocumentNumber: string;
   name: string;
   documentType: DocumentType;
   documentNumber: string;
   expeditionAddress: string;
   birthDate: Date;
-  genre: genre;
+  genre: Genre;
   address: string;
   phone: string;
   phone2: string;
   email: string;
   bank: string;
-  accountType: accountType;
+  BankAccountNumber: BankAccountNumber;
   accountNumber: string;
 }
 
 type DocumentType = 'CC' | 'CE' | 'PAS';
-type genre = 'M' | 'F';
-type accountType = 'AHORRO' | 'CORRIENTE';
+type Genre = 'M' | 'F';
+type BankAccountNumber = 'AHORRO' | 'CORRIENTE';
