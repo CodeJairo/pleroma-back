@@ -35,22 +35,25 @@ const JuridicalPersonSchema = z.object({
   }),
 
   documentNumber: z
-    .number({
-      invalid_type_error: 'Document number must be a number',
+    .string({
       required_error: 'Document number is required',
     })
-    .int({ message: 'Document number must be an integer' })
-    .positive({ message: 'Document number must be a positive number' }),
+    .min(5, {
+      message: 'Document number must be at least 5 characters long',
+    })
+    .max(20, { message: 'Document number must be less than 20 characters long' })
+    .regex(/^\d+$/, {
+      message: 'Document number must be a number',
+    }),
 
   expeditionAddress: z.string({
     invalid_type_error: 'Expedition address must be a string',
     required_error: 'Expedition address is required',
   }),
 
-  birthDate: z.date({
-    invalid_type_error: 'Birth date must be a date',
-    required_error: 'Birth date is required',
-  }),
+  birthDate: z
+    .string({ required_error: 'Birth Date is required', invalid_type_error: 'Birth Date must be a string' })
+    .date(),
 
   genre: z.enum(['M', 'F'], {
     invalid_type_error: 'Genre must be a string',
@@ -107,9 +110,9 @@ const JuridicalPersonSchema = z.object({
       required_error: 'Bank is required',
     })
     .min(3, { message: 'Must be 3 or more characters long' })
-    .max(50, { message: 'Must be 50 or fewer characters long' }),
+    .max(20, { message: 'Must be 20 or fewer characters long' }),
 
-  accountType: z.enum(['A', 'C'], {
+  accountType: z.enum(['AHORROS', 'CORRIENTE'], {
     invalid_type_error: 'Account type must be a string',
     required_error: 'Account type is required',
   }),
@@ -120,7 +123,7 @@ const JuridicalPersonSchema = z.object({
       required_error: 'Account number is required',
     })
     .min(5, { message: 'Must be 5 or more characters long' })
-    .max(50, { message: 'Must be 50 or fewer characters long' })
+    .max(20, { message: 'Must be 20 or fewer characters long' })
     .regex(/^\d+$/, {
       message: 'Account number must be a number',
     }),
