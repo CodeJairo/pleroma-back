@@ -1,5 +1,4 @@
 export interface AppDependencies {
-  contractService: IContractService;
   contractController: IContractController;
 }
 

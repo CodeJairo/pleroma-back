@@ -1,12 +1,11 @@
 import { createApp } from './app';
-import { AppDependencies, IContractController, IContractService } from 'types';
+import { AppDependencies, IContractController, IContractModel, IContractService } from 'types';
 import { ContractController } from '@controllers/index';
 import { ContractService } from '@services/index';
 import { ContractModel } from '@models/contract.model';
 
-const contractService: IContractService = new ContractService({ contractModel: ContractModel });
-const contractController: IContractController = new ContractController({ contractService } as {
-  contractService: IContractService;
-});
+const contractModel: IContractModel = new ContractModel();
+const contractService: IContractService = new ContractService({ contractModel });
+const contractController: IContractController = new ContractController({ contractService });
 
-createApp({ contractController, contractService } as AppDependencies);
+createApp({ contractController } as AppDependencies);

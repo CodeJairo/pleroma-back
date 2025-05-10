@@ -1,10 +1,10 @@
 import { Request, Response } from 'express';
-import { AppDependencies, IContractController } from 'types';
+import { IContractController, IContractService } from 'types';
 import { CustomError } from 'utils/custom-errors';
 
 export class ContractController implements IContractController {
   #contractService;
-  constructor({ contractService }: { contractService: AppDependencies['contractService'] }) {
+  constructor({ contractService }: { contractService: IContractService }) {
     this.#contractService = contractService;
   }
 
