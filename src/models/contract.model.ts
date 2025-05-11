@@ -17,4 +17,18 @@ export class ContractModel implements IContractModel {
       throw new InternalServerError('Error creating juridical person');
     }
   }
+
+  async getJuridicalPerson({ businessDocumentNumber }: { businessDocumentNumber: string }) {
+    const juridicalPerson = await prisma.juridicalPerson.findFirst({
+      where: {
+        businessDocumentNumber,
+      },
+    });
+    if (juridicalPerson) return juridicalPerson;
+    return null;
+  }
+
+  getAllJuridicalPerson(): Promise<any[]> {
+    return prisma.juridicalPerson.findMany();
+  }
 }

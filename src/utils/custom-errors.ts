@@ -16,6 +16,12 @@ export class ValidationError extends CustomError {
   }
 }
 
+export class ConflictError extends CustomError {
+  constructor(message = 'Conflict error') {
+    super(409, message);
+  }
+}
+
 // Subclase para errores internos del servidor
 export class InternalServerError extends CustomError {
   constructor(message = 'Internal server error') {

@@ -15,6 +15,6 @@ export const createContractRouter = ({ contractController }: ContractRouterDepen
     validateRequest(validateJuridicalPerson),
     contractController.createJuridicalPerson
   );
-
+  contractRouter.get('/get-all-juridical-person', contractController.getAllJuridicalPerson);
   return contractRouter;
 };

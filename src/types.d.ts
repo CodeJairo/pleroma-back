@@ -4,14 +4,21 @@ export interface AppDependencies {
 
 export interface IContractController {
   createJuridicalPerson(req: any, res: any): Promise<any>;
+  getAllJuridicalPerson(req: any, res: any)
 }
 
 export interface IContractService {
   createJuridicalPerson({ data }: { data: IJuridicalPerson }): Promise<void>;
+  getAllJuridicalPerson(): Promise<any[]>;
 }
 
 export interface IContractModel {
   createJuridicalPerson({ data }: { data: IJuridicalPerson }): Promise<void>;
+  getJuridicalPerson({ businessDocumentNumber }: { businessDocumentNumber: string }): Promise<any>;
+  getAllJuridicalPerson(): Promise<any[]>;
+  // getJuridicalPersonById({ id }: { id: string }): Promise<any>;
+  // updateJuridicalPerson({ id, data }: { id: string; data: IJuridicalPerson }): Promise<void>;
+  // deleteJuridicalPerson({ id }: { id: string }): Promise<void>;
 }
 
 export interface IJuridicalPerson {

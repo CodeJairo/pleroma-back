@@ -13,8 +13,16 @@ export class ContractController implements IContractController {
       await this.#contractService.createJuridicalPerson({ data: req.body });
       return res.status(200).json({ message: 'Juridical person created successfully' });
     } catch (error) {
-      console.log(error);
-      this.#handleError(error, res);
+      return this.#handleError(error, res);
+    }
+  };
+
+  getAllJuridicalPerson = async (_req: Request, res: Response) => {
+    try {
+      const juridicalPersonArray = await this.#contractService.getAllJuridicalPerson();
+      return res.status(200).send(juridicalPersonArray);
+    } catch (error) {
+      return this.#handleError(error, res);
     }
   };
 
@@ -22,7 +30,6 @@ export class ContractController implements IContractController {
     if (error instanceof CustomError) {
       return res.status(error.statusCode).json({ message: error.message });
     }
-    console.error(error);
     return res.status(500).json({ message: 'Internal Server Error' });
   };
 }
