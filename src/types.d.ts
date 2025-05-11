@@ -2,20 +2,20 @@ export interface AppDependencies {
   contractController: IContractController;
 }
 
-export interface IContractService {
-  createJuridicalPerson({ data }: { data: IJuridicalPerson }): Promise<IJuridicalPerson>;
+export interface IContractController {
+  createJuridicalPerson(req: any, res: any): Promise<any>;
 }
 
-export interface IContractController {
-  createJuridicalPerson(req: any, res: any): Promise<void>;
+export interface IContractService {
+  createJuridicalPerson({ data }: { data: IJuridicalPerson }): Promise<void>;
 }
+
 export interface IContractModel {
-  createJuridicalPerson({ data }: { data: IJuridicalPerson }): Promise<IJuridicalPerson>;
+  createJuridicalPerson({ data }: { data: IJuridicalPerson }): Promise<void>;
 }
 
 export interface IJuridicalPerson {
   businessName: string;
-  businessDocumentType: 'NIT';
   businessDocumentNumber: string;
   name: string;
   documentType: DocumentType;
@@ -28,10 +28,10 @@ export interface IJuridicalPerson {
   phone2: string;
   email: string;
   bank: string;
-  BankAccountNumber: BankAccountNumber;
-  accountNumber: string;
+  bankAccountNumber: string;
+  accountType: BankAccountType;
 }
 
 type DocumentType = 'CC' | 'CE' | 'PAS';
 type Genre = 'M' | 'F';
-type BankAccountNumber = 'AHORRO' | 'CORRIENTE';
+type BankAccountType = 'AHORRO' | 'CORRIENTE';

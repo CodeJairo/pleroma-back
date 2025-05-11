@@ -11,13 +11,6 @@ const JuridicalPersonSchema = z.object({
     .min(3, { message: 'Must be 3 or more characters long' })
     .max(50, { message: 'Must be 50 or fewer characters long' }),
 
-  businessDocumentType: z
-    .literal('NIT', {
-      message: 'Business document type must be NIT',
-      invalid_type_error: 'Business document type must be a string',
-    })
-    .default('NIT'),
-
   businessDocumentNumber: z
     .string({
       required_error: 'Business Document number is required',
@@ -129,7 +122,7 @@ const JuridicalPersonSchema = z.object({
     required_error: 'Account type is required',
   }),
 
-  BankAccountNumber: z
+  bankAccountNumber: z
     .string({
       invalid_type_error: 'Account number must be a string',
       required_error: 'Account number is required',

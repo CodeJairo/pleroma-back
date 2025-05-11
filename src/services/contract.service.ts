@@ -1,4 +1,4 @@
-import { CustomError, InternalServerError, redisClient } from '@utils/index';
+import { CustomError, InternalServerError } from '@utils/index';
 import { IContractModel, IContractService, IJuridicalPerson } from 'types';
 
 export class ContractService implements IContractService {
@@ -7,17 +7,10 @@ export class ContractService implements IContractService {
     this.#contractModel = contractModel;
   }
 
-  async createJuridicalPerson({ data }: { data: IJuridicalPerson }) {
+  async createJuridicalPerson({ data }: { data: IJuridicalPerson }): Promise<void> {
     try {
-      const redisKey = `juridicalPerson:${data.businessDocumentNumber}`;
-      const redisData = await redisClient.get(redisKey);
-      if (redisData) return JSON.parse(redisData);
       await this.#contractModel.createJuridicalPerson({ data });
-      await redisClient.set(redisKey, JSON.stringify(data), {
-        expiration: { type: 'EX', value: 60 * 60 * 1 },
-      });
-
-      return data;
+      return;
     } catch (error) {
       if (error instanceof CustomError) throw error;
       throw new InternalServerError('Error creating juridical person');

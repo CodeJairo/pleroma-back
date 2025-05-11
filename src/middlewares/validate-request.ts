@@ -8,7 +8,6 @@ export const validateRequest =
     if (!validationResult.success) {
       const errorMessagesArray = JSON.parse(validationResult.error.message);
       const errorMessages = errorMessagesArray.map((error: ZodIssue) => error.message).join(', ');
-      console.log(errorMessagesArray);
       return res.status(422).json({ message: errorMessages });
     }
 
