@@ -8,6 +8,7 @@ export class ContractModel implements IContractModel {
       await prisma.juridicalPerson.create({
         data: {
           ...data,
+          createdBy: 'any', // TODO: replace with actual user ID
           birthDate: new Date(data.birthDate),
         },
       });
