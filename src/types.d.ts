@@ -1,8 +1,18 @@
 import { Request, Response } from 'express';
+import { JwtPayload } from 'jsonwebtoken';
+
+declare global {
+  namespace Express {
+    interface Request {
+      user?: string | JwtPayload;
+    }
+  }
+}
 
 export interface AppDependencies {
   contractController: IContractController;
   authController: IAuthController;
+  authMiddleware: IAuthMiddleware;
 }
 
 export interface IContractController {
@@ -29,8 +39,10 @@ export interface IContractService {
 }
 
 export interface IAuthService {
-  register({ data }: { data: IUser }): Promise<any>;
-  // login(req: Request, res: Response): Promise<any>;
+  register({ data }: { data: IUserRegister }): Promise<void>;
+  login({ data }: { data: IUserLogin }): Promise<string>;
+  isUserActive({ id }: { id: string }): Promise<boolean>;
+  isUserAdmin({ id }: { id: string }): Promise<boolean>;
   // logout(req: Request, res: Response): Promise<any>;
   // refreshToken(req: Request, res: Response): Promise<any>;
   // forgotPassword(req: Request, res: Response): Promise<any>;
@@ -51,10 +63,10 @@ export interface IContractModel {
 }
 
 export interface IAuthModel {
-  register({ data }: { data: IUser }): Promise<any>;
-  getUserByEmail({ email }: { email: string }): Promise<any>;
-  getUserById({ id }: { id: string }): Promise<any>;
-  getUserByUsername({ username }: { username: string }): Promise<any>;
+  register({ data }: { data: IUserRegister }): Promise<IUserModel>;
+  getUserByEmail({ email }: { email: string }): Promise<IUserModel | null>;
+  getUserById({ id }: { id: string }): Promise<IUserModel | null>;
+  getUserByUsername({ username }: { username: string }): Promise<IUserModel | null>;
 }
 
 export interface IJuridicalPerson {
@@ -75,12 +87,37 @@ export interface IJuridicalPerson {
   accountType: BankAccountType;
 }
 
-export interface IUser {
+export interface IUserModel {
+  id: string;
+  email: string;
+  createdAt: Date;
+  updatedAt: Date;
+  username: string;
+  password: string;
+  role: UserRole;
+  isActive: boolean;
+}
+
+type UserRole = 'USER' | 'ADMIN';
+
+export interface IUserRegister {
   username: string;
   password: string;
   email: string;
 }
 
+export interface IUserLogin {
+  email: string;
+  password: string;
+}
+
 type DocumentType = 'CC' | 'CE' | 'PAS';
 type Genre = 'M' | 'F';
 type BankAccountType = 'AHORRO' | 'CORRIENTE';
+
+export interface IAuthMiddleware {
+  isAuthenticated(req: Request, res: Response, next: NextFunction): Promise<any>;
+  isAdmin(req: Request, res: Response, next: NextFunction): Promise<any>;
+  // isUserActive(req: Request, res: Response, next: NextFunction): Promise<any>;
+  // isUser(req: Request, res: Response, next: NextFunction): Promise<any>;
+}

@@ -2,6 +2,7 @@ import { createApp } from './app';
 import {
   AppDependencies,
   IAuthController,
+  IAuthMiddleware,
   IAuthModel,
   IAuthService,
   IContractController,
@@ -14,6 +15,7 @@ import { ContractController } from '@controllers/index';
 import { AuthController } from '@controllers/index';
 import { ContractService } from '@services/index';
 import { AuthService } from '@services/index';
+import { AuthMiddleware } from '@middlewares/auth';
 
 // Instantiate the models
 const contractModel: IContractModel = new ContractModel();
@@ -27,4 +29,7 @@ const authService: IAuthService = new AuthService({ authModel });
 const contractController: IContractController = new ContractController({ contractService });
 const authController: IAuthController = new AuthController({ authService });
 
-createApp({ contractController, authController } as AppDependencies);
+// Instantiate the Middlewares
+const authMiddleware: IAuthMiddleware = new AuthMiddleware({ authService });
+
+createApp({ contractController, authController, authMiddleware } as AppDependencies);

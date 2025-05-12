@@ -1,16 +1,17 @@
 import { validateRequest } from '@middlewares/validate-request';
 import { validateLogin, validateUser } from '@schemas/user.schema';
 import { Router } from 'express';
-import { IAuthController } from 'types';
+import { IAuthController, IAuthMiddleware } from 'types';
 
 interface AuthRouterDependencies {
   authController: IAuthController;
+  authMiddleware: IAuthMiddleware;
 }
 
-export const createAuthRouter = ({ authController }: AuthRouterDependencies) => {
+export const createAuthRouter = ({ authController, authMiddleware }: AuthRouterDependencies) => {
   const authRouter = Router();
 
-  authRouter.post('/register', validateRequest(validateUser), authController.register);
+  authRouter.post('/register', authMiddleware.isAdmin, validateRequest(validateUser), authController.register);
   authRouter.post('/login', validateRequest(validateLogin), authController.login);
   authRouter.post('/logout', authController.logout);
 

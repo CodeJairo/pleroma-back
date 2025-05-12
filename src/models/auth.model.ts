@@ -1,30 +1,18 @@
-import { IAuthModel, IUser } from 'types';
+import { IAuthModel, IUserModel, IUserRegister } from 'types';
 import prisma from './prisma';
 import { InternalServerError } from '@utils/custom-errors';
 
 export class AuthModel implements IAuthModel {
-  async register({ data }: { data: IUser }): Promise<any> {
+  async register({ data }: { data: IUserRegister }): Promise<IUserModel> {
     try {
-      const user = await prisma.user.create({
-        data: {
-          ...data,
-        },
-      });
-      const userReturn = {
-        id: user.id,
-        username: user.username,
-        email: user.email,
-        role: user.role,
-        createdAt: user.createdAt,
-        updatedAt: user.updatedAt,
-      };
-      return userReturn;
+      const user = await prisma.user.create({ data: { ...data } });
+      return user;
     } catch (error) {
       throw new InternalServerError('Error registering user');
     }
   }
 
-  async getUserByEmail({ email }: { email: string }): Promise<any> {
+  async getUserByEmail({ email }: { email: string }): Promise<IUserModel | null> {
     try {
       const user = await prisma.user.findUnique({
         where: {
@@ -37,7 +25,7 @@ export class AuthModel implements IAuthModel {
     }
   }
 
-  async getUserById({ id }: { id: string }): Promise<any> {
+  async getUserById({ id }: { id: string }): Promise<IUserModel | null> {
     try {
       const user = await prisma.user.findUnique({
         where: {
@@ -50,7 +38,7 @@ export class AuthModel implements IAuthModel {
     }
   }
 
-  async getUserByUsername({ username }: { username: string }): Promise<any> {
+  async getUserByUsername({ username }: { username: string }): Promise<IUserModel | null> {
     try {
       const user = await prisma.user.findFirst({
         where: {

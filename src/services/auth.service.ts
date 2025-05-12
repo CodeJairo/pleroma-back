@@ -1,6 +1,14 @@
-import { ConflictError, CustomError, InternalServerError } from '@utils/index';
-import { IAuthModel, IAuthService, IUser } from 'types';
-import { hashPassword } from '@utils/index';
+import {
+  ConflictError,
+  CustomError,
+  InternalServerError,
+  hashPassword,
+  comparePasswords,
+  generateToken,
+  NotFoundError,
+  UnauthorizedError,
+} from '@utils/index';
+import { IAuthModel, IAuthService, IUserRegister, IUserLogin } from 'types';
 
 export class AuthService implements IAuthService {
   #authModel;
@@ -8,7 +16,7 @@ export class AuthService implements IAuthService {
     this.#authModel = authModel;
   }
 
-  async register({ data }: { data: IUser }): Promise<any> {
+  async register({ data }: { data: IUserRegister }): Promise<void> {
     try {
       let userExists;
       userExists = await this.#authModel.getUserByEmail({ email: data.email });
@@ -22,11 +30,49 @@ export class AuthService implements IAuthService {
         email: data.email.toLowerCase(),
         password: hashedPassword,
       };
-      const user = this.#authModel.register({ data: userData });
-      return user;
+      await this.#authModel.register({ data: userData });
+      return;
     } catch (error) {
       if (error instanceof CustomError) throw error;
       throw new InternalServerError('Error registering user');
+    }
+  }
+
+  async login({ data }: { data: IUserLogin }): Promise<string> {
+    try {
+      const user = await this.#authModel.getUserByEmail({ email: data.email });
+      if (!user) throw new NotFoundError('User not found');
+      if (!user.isActive) throw new UnauthorizedError('User is not active, please contact support');
+      const isPasswordValid = await comparePasswords(data.password, user.password);
+      if (!isPasswordValid) throw new UnauthorizedError('Invalid password');
+      const payload = { id: user.id, username: user.username };
+      const token = generateToken(payload, '1h');
+      return token;
+    } catch (error) {
+      if (error instanceof CustomError) throw error;
+      throw new InternalServerError('Error logging in user');
+    }
+  }
+
+  async isUserActive({ id }: { id: string }): Promise<boolean> {
+    try {
+      const user = await this.#authModel.getUserById({ id });
+      if (!user) throw new NotFoundError('User not found');
+      return user.isActive;
+    } catch (error) {
+      if (error instanceof CustomError) throw error;
+      throw new InternalServerError('Error checking user status');
+    }
+  }
+
+  async isUserAdmin({ id }: { id: string }): Promise<boolean> {
+    try {
+      const user = await this.#authModel.getUserById({ id });
+      if (!user) throw new NotFoundError('User not found');
+      return user.role === 'ADMIN';
+    } catch (error) {
+      if (error instanceof CustomError) throw error;
+      throw new InternalServerError('Error checking user status');
     }
   }
 }

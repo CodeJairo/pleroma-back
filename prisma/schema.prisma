@@ -14,12 +14,18 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+enum UserRole {
+  USER
+  ADMIN
+}
+
 model User {
   id        String   @id @default(uuid()) @db.Uuid
   username  String   @unique
   email     String   @unique
   password  String
-  role      String   @default("USER") // USER, ADMIN
+  role      UserRole @default(USER) // USER, ADMIN
+  isActive  Boolean  @default(true)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }

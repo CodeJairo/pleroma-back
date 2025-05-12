@@ -39,7 +39,7 @@ export class BadRequestError extends CustomError {
 }
 
 // Subclase para errores de autenticación
-export class AuthenticationError extends CustomError {
+export class UnauthorizedError extends CustomError {
   constructor(message = 'Authentication failed') {
     super(401, message);
   }
