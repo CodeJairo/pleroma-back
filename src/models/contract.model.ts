@@ -3,12 +3,12 @@ import prisma from './prisma';
 import { InternalServerError } from '@utils/custom-errors';
 
 export class ContractModel implements IContractModel {
-  async createJuridicalPerson({ data }: { data: IJuridicalPerson }): Promise<void> {
+  async createJuridicalPerson({ data, createdBy }: { data: IJuridicalPerson; createdBy: string }): Promise<void> {
     try {
       await prisma.juridicalPerson.create({
         data: {
           ...data,
-          createdBy: 'any', // TODO: replace with actual user ID
+          createdBy,
           birthDate: new Date(data.birthDate),
         },
       });
@@ -19,17 +19,28 @@ export class ContractModel implements IContractModel {
     }
   }
 
-  async getJuridicalPerson({ businessDocumentNumber }: { businessDocumentNumber: string }) {
+  async getJuridicalPerson({
+    businessDocumentNumber,
+    createdBy,
+  }: {
+    businessDocumentNumber: string;
+    createdBy: string;
+  }) {
     const juridicalPerson = await prisma.juridicalPerson.findFirst({
       where: {
         businessDocumentNumber,
+        createdBy,
       },
     });
     if (juridicalPerson) return juridicalPerson;
     return null;
   }
 
-  getAllJuridicalPerson(): Promise<any[]> {
-    return prisma.juridicalPerson.findMany();
+  getAllJuridicalPerson(id: string): Promise<any[]> {
+    return prisma.juridicalPerson.findMany({
+      where: {
+        createdBy: id,
+      },
+    });
   }
 }

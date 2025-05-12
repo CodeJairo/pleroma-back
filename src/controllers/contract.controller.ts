@@ -10,16 +10,17 @@ export class ContractController implements IContractController {
 
   createJuridicalPerson = async (req: Request, res: Response): Promise<any> => {
     try {
-      await this.#contractService.createJuridicalPerson({ data: req.body });
+      console.log(req.user?.id);
+      await this.#contractService.createJuridicalPerson({ data: req.body, createdBy: req.user!.id });
       return res.status(200).json({ message: 'Juridical person created successfully' });
     } catch (error) {
       return handleError(error, res);
     }
   };
 
-  getAllJuridicalPerson = async (_req: Request, res: Response) => {
+  getAllJuridicalPerson = async (req: Request, res: Response) => {
     try {
-      const juridicalPersonArray = await this.#contractService.getAllJuridicalPerson();
+      const juridicalPersonArray = await this.#contractService.getAllJuridicalPerson(req.user!.id);
       return res.status(200).send(juridicalPersonArray);
     } catch (error) {
       return handleError(error, res);

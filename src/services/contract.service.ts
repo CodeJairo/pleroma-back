@@ -7,14 +7,15 @@ export class ContractService implements IContractService {
     this.#contractModel = contractModel;
   }
 
-  async createJuridicalPerson({ data }: { data: IJuridicalPerson }): Promise<void> {
+  async createJuridicalPerson({ data, createdBy }: { data: IJuridicalPerson; createdBy: string }): Promise<void> {
     try {
       const existJuridicalPerson = await this.#contractModel.getJuridicalPerson({
         businessDocumentNumber: data.businessDocumentNumber,
+        createdBy,
       });
       if (existJuridicalPerson) throw new ConflictError('Juridical person already exists');
-      await this.#contractModel.createJuridicalPerson({ data });
-      const redisKey = 'juridicalPersonArray';
+      await this.#contractModel.createJuridicalPerson({ data, createdBy });
+      const redisKey = `juridicalPersonArray:${createdBy}`;
       await redisClient.del(redisKey);
       return;
     } catch (error) {
@@ -23,12 +24,12 @@ export class ContractService implements IContractService {
     }
   }
 
-  async getAllJuridicalPerson(): Promise<any[]> {
+  async getAllJuridicalPerson(id: string): Promise<any[]> {
     try {
-      const redisKey = 'juridicalPersonArray';
+      const redisKey = `juridicalPersonArray:${id}`;
       const redisData = await redisClient.get(redisKey);
       if (redisData) return JSON.parse(redisData);
-      const juridicalPersonArray = await this.#contractModel.getAllJuridicalPerson();
+      const juridicalPersonArray = await this.#contractModel.getAllJuridicalPerson(id);
       await redisClient.set(redisKey, JSON.stringify(juridicalPersonArray), {
         expiration: { type: 'EX', value: 60 * 60 * 24 },
       });

@@ -13,7 +13,7 @@ export const createApp = ({ contractController, authController, authMiddleware }
   app.disable('x-powered-by');
   app.use(cookieParser());
 
-  app.use('/contract', createContractRouter({ contractController }));
+  app.use('/contract', createContractRouter({ contractController, authMiddleware }));
   app.use('/auth', createAuthRouter({ authController, authMiddleware }));
 
   app.listen(config.port, () => {

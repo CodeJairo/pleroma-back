@@ -1,12 +1,16 @@
 import { Request, Response } from 'express';
-import { JwtPayload } from 'jsonwebtoken';
 
 declare global {
   namespace Express {
     interface Request {
-      user?: string | JwtPayload;
+      user?: RequestPayload;
     }
   }
+}
+
+interface RequestPayload {
+  id: string;
+  username: string;
 }
 
 export interface AppDependencies {
@@ -34,8 +38,8 @@ export interface IAuthController {
 }
 
 export interface IContractService {
-  createJuridicalPerson({ data }: { data: IJuridicalPerson }): Promise<void>;
-  getAllJuridicalPerson(): Promise<any[]>;
+  createJuridicalPerson({ data, createdBy }: { data: IJuridicalPerson; createdBy: string }): Promise<void>;
+  getAllJuridicalPerson(id): Promise<any[]>;
 }
 
 export interface IAuthService {
@@ -54,9 +58,15 @@ export interface IAuthService {
 }
 
 export interface IContractModel {
-  createJuridicalPerson({ data }: { data: IJuridicalPerson }): Promise<void>;
-  getJuridicalPerson({ businessDocumentNumber }: { businessDocumentNumber: string }): Promise<any>;
-  getAllJuridicalPerson(): Promise<any[]>;
+  createJuridicalPerson({ data, createdBy }: { data: IJuridicalPerson; createdBy: string }): Promise<void>;
+  getJuridicalPerson({
+    businessDocumentNumber,
+    createdBy,
+  }: {
+    businessDocumentNumber: string;
+    createdBy: string;
+  }): Promise<any>;
+  getAllJuridicalPerson(id): Promise<any[]>;
   // getJuridicalPersonById({ id }: { id: string }): Promise<any>;
   // updateJuridicalPerson({ id, data }: { id: string; data: IJuridicalPerson }): Promise<void>;
   // deleteJuridicalPerson({ id }: { id: string }): Promise<void>;
@@ -85,6 +95,7 @@ export interface IJuridicalPerson {
   bank: string;
   bankAccountNumber: string;
   accountType: BankAccountType;
+  createdBy: string;
 }
 
 export interface IUserModel {
