@@ -15,6 +15,7 @@ services:
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres123
+
       POSTGRES_DB: pleromabd
     ports:
       - '5432:5432'

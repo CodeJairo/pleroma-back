@@ -30,7 +30,6 @@ export class ContractModel implements IContractModel {
       });
       return;
     } catch (error) {
-      console.log(error);
       throw new InternalServerError('Error creating juridical person');
     }
   }
@@ -42,7 +41,7 @@ export class ContractModel implements IContractModel {
         createdBy,
       },
     });
-    console.log('juridicalPerson', juridicalPerson);
+
     if (juridicalPerson) return juridicalPerson;
     return null;
   }

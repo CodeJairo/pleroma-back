@@ -8,9 +8,15 @@ export class ContractService implements IContractService {
   }
   async getAllJuridicalPersonByDocumentNumber({ document, createdBy }: { document: string; createdBy: string }) {
     try {
+      const redisKey = `juridicalPersonArray:${document}-${createdBy}`;
+      const redisData = await redisClient.get(redisKey);
+      if (redisData) return JSON.parse(redisData);
       const juridicalPersonArray = await this.#contractModel.getAllJuridicalPersonByDocumentNumber({
         document,
         createdBy,
+      });
+      await redisClient.set(redisKey, JSON.stringify(juridicalPersonArray), {
+        expiration: { type: 'EX', value: 60 * 60 * 24 },
       });
       return juridicalPersonArray;
     } catch (error) {
@@ -28,7 +34,9 @@ export class ContractService implements IContractService {
       if (existJuridicalPerson) throw new ConflictError('Juridical person already exists');
       await this.#contractModel.createJuridicalPerson({ data, createdBy });
       const redisKey = `juridicalPersonArray:${createdBy}`;
+      const redisKey2 = `juridicalPersonArray:${data.businessDocumentNumber}-${createdBy}`;
       await redisClient.del(redisKey);
+      await redisClient.del(redisKey2);
       return;
     } catch (error) {
       if (error instanceof CustomError) throw error;
@@ -52,3 +60,5 @@ export class ContractService implements IContractService {
     }
   }
 }
+
+

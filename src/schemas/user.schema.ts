@@ -1,6 +1,6 @@
 import z, { SafeParseReturnType } from 'zod';
 
-const regex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[$@$!%*?&])([A-Za-z\d$@$!%*?&]|[^ ]){8,15}$/;
+const regex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[$@$!%*?&])([A-Za-z\d$@$!%*?&]|[^ ])/;
 
 const userSchema = z.object({
   username: z
@@ -18,10 +18,13 @@ const userSchema = z.object({
     })
     .email({ message: 'Invalid email format' }),
 
-  password: z.string({ required_error: 'Password is required' }).regex(regex, {
-    message:
-      'Password must contain at least one uppercase letter, one lowercase letter, one number, and be at least 8 characters long',
-  }),
+  password: z
+    .string({ required_error: 'Password is required' })
+    .min(8, { message: 'Password must be at least 8 characters long' })
+    .max(20, { message: 'Password must be at most 20 characters long' })
+    .regex(regex, {
+      message: 'Password must contain at least one uppercase letter, one lowercase letter, one number',
+    }),
 });
 
 export function validateUser(data: unknown): SafeParseReturnType<unknown, z.infer<typeof userSchema>> {
