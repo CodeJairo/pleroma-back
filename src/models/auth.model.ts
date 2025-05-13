@@ -1,9 +1,9 @@
-import { IAuthModel, IUserModel, IUserRegister } from 'types';
+import { IAuthModel, IUserEntity, IUserRegister } from 'types';
 import prisma from './prisma';
 import { InternalServerError } from '@utils/custom-errors';
 
 export class AuthModel implements IAuthModel {
-  async register({ data }: { data: IUserRegister }): Promise<IUserModel> {
+  async register({ data }: { data: IUserRegister }): Promise<IUserEntity> {
     try {
       const user = await prisma.user.create({ data: { ...data } });
       return user;
@@ -12,7 +12,7 @@ export class AuthModel implements IAuthModel {
     }
   }
 
-  async getUserByEmail({ email }: { email: string }): Promise<IUserModel | null> {
+  async getUserByEmail({ email }: { email: string }): Promise<IUserEntity | null> {
     try {
       const user = await prisma.user.findUnique({
         where: {
@@ -25,7 +25,7 @@ export class AuthModel implements IAuthModel {
     }
   }
 
-  async getUserById({ id }: { id: string }): Promise<IUserModel | null> {
+  async getUserById({ id }: { id: string }): Promise<IUserEntity | null> {
     try {
       const user = await prisma.user.findUnique({
         where: {
@@ -38,7 +38,7 @@ export class AuthModel implements IAuthModel {
     }
   }
 
-  async getUserByUsername({ username }: { username: string }): Promise<IUserModel | null> {
+  async getUserByUsername({ username }: { username: string }): Promise<IUserEntity | null> {
     try {
       const user = await prisma.user.findFirst({
         where: {

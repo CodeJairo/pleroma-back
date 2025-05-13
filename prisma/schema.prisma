@@ -60,3 +60,31 @@ model JuridicalPerson {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
+
+model NaturalPerson {
+  id String @id @default(uuid()) @db.Uuid
+
+  // Natural Person Information
+  name              String   @db.VarChar(50)
+  documentType      String   @db.VarChar(3)
+  documentNumber    String   @db.VarChar(20)
+  expeditionAddress String   @db.VarChar(255)
+  birthDate         DateTime @db.Date
+  genre             String   @db.Char(1) // M or F
+
+  // Contact Information
+  address String  @db.VarChar(50)
+  phone   String  @db.Char(10)
+  phone2  String? @db.Char(10)
+  email   String  @db.VarChar(255)
+
+  // Bank Information
+  bank              String @db.VarChar(20)
+  accountType       String @db.VarChar(10)
+  bankAccountNumber String @db.VarChar(20)
+
+  // Additional 
+  createdBy String   @db.Uuid
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}

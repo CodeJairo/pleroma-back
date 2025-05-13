@@ -6,11 +6,23 @@ export class ContractService implements IContractService {
   constructor({ contractModel }: { contractModel: IContractModel }) {
     this.#contractModel = contractModel;
   }
+  async getAllJuridicalPersonByDocumentNumber({ document, createdBy }: { document: string; createdBy: string }) {
+    try {
+      const juridicalPersonArray = await this.#contractModel.getAllJuridicalPersonByDocumentNumber({
+        document,
+        createdBy,
+      });
+      return juridicalPersonArray;
+    } catch (error) {
+      if (error instanceof CustomError) throw error;
+      throw new InternalServerError('Error getting all juridical persons please try again');
+    }
+  }
 
   async createJuridicalPerson({ data, createdBy }: { data: IJuridicalPerson; createdBy: string }): Promise<void> {
     try {
       const existJuridicalPerson = await this.#contractModel.getJuridicalPerson({
-        businessDocumentNumber: data.businessDocumentNumber,
+        document: data.businessDocumentNumber,
         createdBy,
       });
       if (existJuridicalPerson) throw new ConflictError('Juridical person already exists');
