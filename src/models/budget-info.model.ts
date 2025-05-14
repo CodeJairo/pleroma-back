@@ -23,4 +23,23 @@ export class BudgetModel implements IBudgetModel {
       throw new InternalServerError('Error creating budget info');
     }
   }
+
+  async getBudgetInfo({ certificateNumber, createdBy }: { certificateNumber: string; createdBy: string }) {
+    try {
+      const budgetInfo = await prisma.budgetInformation.findFirst({
+        where: {
+          certificateNumber,
+          createdBy,
+        },
+        include: {
+          rubros: true,
+        },
+      });
+
+      if (budgetInfo) return budgetInfo;
+      return null;
+    } catch (error) {
+      throw new InternalServerError('Error getting budget info');
+    }
+  }
 }

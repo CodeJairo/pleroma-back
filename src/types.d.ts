@@ -160,6 +160,7 @@ export interface IAuthModel {
 
 export interface IBudgetModel {
   createBudgetInfo({ data, createdBy }: { data: IBudgetInfoEntity; createdBy: string }): Promise<void>;
+  getBudgetInfo({ certificateNumber, createdBy }: { certificateNumber: string; createdBy: string }): Promise<any>;
 }
 
 // ---------------------------------------------
