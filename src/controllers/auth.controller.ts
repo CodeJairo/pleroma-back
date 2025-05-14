@@ -1,7 +1,6 @@
 import { Request, Response } from 'express';
 import { IAuthController, IAuthService } from 'types';
-import { handleError } from '@utils/handle-error';
-import { InternalServerError } from '@utils/custom-errors';
+import { handleError, InternalServerError } from '@utils/index';
 import config from 'config/config';
 
 export class AuthController implements IAuthController {

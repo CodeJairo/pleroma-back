@@ -42,4 +42,38 @@ export class BudgetModel implements IBudgetModel {
       throw new InternalServerError('Error getting budget info');
     }
   }
+
+  async getAllBudgetInfo({ createdBy }: { createdBy: string }) {
+    try {
+      return await prisma.budgetInformation.findMany({
+        where: {
+          createdBy,
+        },
+        include: {
+          rubros: true,
+        },
+      });
+    } catch (error) {
+      throw new InternalServerError('Error getting all budget info');
+    }
+  }
+
+  async getAllBudgetInfoByCertificateNumber({ certificateNumber, createdBy }: { certificateNumber: string; createdBy: string }) {
+    try {
+      return await prisma.budgetInformation.findMany({
+        where: {
+          certificateNumber: {
+            startsWith: certificateNumber,
+            mode: 'insensitive',
+          },
+          createdBy,
+        },
+        include: {
+          rubros: true,
+        },
+      });
+    } catch (error) {
+      throw new InternalServerError('Error getting all budget info by certificate number');
+    }
+  }
 }

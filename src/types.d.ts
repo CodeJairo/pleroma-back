@@ -135,6 +135,7 @@ export interface IAuthController {
 
 export interface IBudgetController {
   createBudgetInfo(req: Request, res: Response): Promise<any>;
+  getAllBudgetInfo(req: Request, res: Response): Promise<any>;
 }
 
 // ---------------------------------------------
@@ -161,6 +162,14 @@ export interface IAuthModel {
 export interface IBudgetModel {
   createBudgetInfo({ data, createdBy }: { data: IBudgetInfoEntity; createdBy: string }): Promise<void>;
   getBudgetInfo({ certificateNumber, createdBy }: { certificateNumber: string; createdBy: string }): Promise<any>;
+  getAllBudgetInfo({ createdBy }: { createdBy: string }): Promise<any>;
+  getAllBudgetInfoByCertificateNumber({
+    certificateNumber,
+    createdBy,
+  }: {
+    certificateNumber: string;
+    createdBy: string;
+  }): Promise<any>;
 }
 
 // ---------------------------------------------
@@ -191,8 +200,8 @@ export interface IAuthService {
 }
 
 export interface IBudgetService {
-  //TODO: Cambiar el tipo de data a un tipo específico
   createBudgetInfo({ data, createdBy }: { data: IBudgetInfoEntity; createdBy: string }): Promise<void>;
+  getBudgetInfo({ certificateNumber, createdBy }: { certificateNumber?: string; createdBy: string }): Promise<IBudgetInfoEntity[]>;
 }
 
 // ---------------------------------------------

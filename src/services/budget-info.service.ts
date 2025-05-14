@@ -18,4 +18,18 @@ export class BudgetService implements IBudgetService {
       throw new InternalServerError('Error creating budget info');
     }
   }
+
+  async getBudgetInfo({ certificateNumber, createdBy }: { certificateNumber?: string; createdBy: string }) {
+    try {
+      if (!certificateNumber) {
+        const budgetInfo = await this.#budgetModel.getAllBudgetInfo({ createdBy });
+        return budgetInfo;
+      }
+      const budgetInfo = await this.#budgetModel.getAllBudgetInfoByCertificateNumber({ certificateNumber, createdBy });
+      return budgetInfo;
+    } catch (error) {
+      if (error instanceof CustomError) throw error;
+      throw new InternalServerError('Error getting budget info');
+    }
+  }
 }
