@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
 import { IContractController, IContractService } from 'types';
-import { handleError } from '@utils/handle-error';
+import { handleError } from '@utils/index';
 
 export class ContractController implements IContractController {
   #contractService;

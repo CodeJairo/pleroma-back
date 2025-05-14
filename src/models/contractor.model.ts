@@ -1,4 +1,4 @@
-import { IContractModel, IJuridicalPerson } from 'types';
+import { IContractModel, IJuridicalPersonEntity } from 'types';
 import prisma from './prisma';
 import { InternalServerError } from '@utils/custom-errors';
 
@@ -19,7 +19,7 @@ export class ContractModel implements IContractModel {
     }
   }
 
-  async createJuridicalPerson({ data, createdBy }: { data: IJuridicalPerson; createdBy: string }) {
+  async createJuridicalPerson({ data, createdBy }: { data: IJuridicalPersonEntity; createdBy: string }) {
     try {
       await prisma.juridicalPerson.create({
         data: {

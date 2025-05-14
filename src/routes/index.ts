@@ -1,1 +1,1 @@
-export * from './contract.routes';
+export * from './contractor.routes';

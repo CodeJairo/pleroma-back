@@ -29,7 +29,7 @@ type BankAccountType = 'AHORRO' | 'CORRIENTE';
 // Interfaces de Schemas
 // ---------------------------------------------
 
-export interface IJuridicalPerson {
+export interface IJuridicalPersonEntity {
   businessName: string;
   businessDocumentNumber: string;
   name: string;
@@ -48,7 +48,7 @@ export interface IJuridicalPerson {
   createdBy: string;
 }
 
-export interface INaturalPerson {
+export interface INaturalPersonEntity {
   name: string;
   documentType: DocumentType;
   documentNumber: string;
@@ -63,6 +63,19 @@ export interface INaturalPerson {
   bankAccountNumber: string;
   accountType: BankAccountType;
   createdBy: string;
+}
+
+export interface IBudgetInfoEntity {
+  certificateNumber: string;
+  issuanceDate: Date;
+  totalAssignedAmount: number;
+  rubros: IRubro[];
+}
+
+export interface IRubro {
+  name: string;
+  code: string;
+  assignedAmount: number;
 }
 
 export interface IUserEntity {
@@ -120,12 +133,16 @@ export interface IAuthController {
   // deleteUserProfile(req: Request, res: Response): Promise<any>;
 }
 
+export interface IBudgetController {
+  createBudgetInfo(req: Request, res: Response): Promise<any>;
+}
+
 // ---------------------------------------------
 // Interfaces de Modelos
 // ---------------------------------------------
 
 export interface IContractModel {
-  createJuridicalPerson({ data, createdBy }: { data: IJuridicalPerson; createdBy: string }): Promise<void>;
+  createJuridicalPerson({ data, createdBy }: { data: IJuridicalPersonEntity; createdBy: string }): Promise<void>;
   getAllJuridicalPersonByDocumentNumber({ document, createdBy }: { document: string; createdBy: string }): Promise<any>;
   getAllJuridicalPerson(id): Promise<any[]>;
   getJuridicalPerson({ document, createdBy }: { document: string; createdBy: string }): Promise<any>;
@@ -141,12 +158,16 @@ export interface IAuthModel {
   getUserByUsername({ username }: { username: string }): Promise<IUserEntity | null>;
 }
 
+export interface IBudgetModel {
+  createBudgetInfo({ data, createdBy }: { data: IBudgetInfoEntity; createdBy: string }): Promise<void>;
+}
+
 // ---------------------------------------------
 // Interfaces de Servicios
 // ---------------------------------------------
 
 export interface IContractService {
-  createJuridicalPerson({ data, createdBy }: { data: IJuridicalPerson; createdBy: string }): Promise<void>;
+  createJuridicalPerson({ data, createdBy }: { data: IJuridicalPersonEntity; createdBy: string }): Promise<void>;
 
   getAllJuridicalPerson(id): Promise<any[]>;
 
@@ -168,6 +189,11 @@ export interface IAuthService {
   // deleteUserProfile(req: Request, res: Response): Promise<any>;
 }
 
+export interface IBudgetService {
+  //TODO: Cambiar el tipo de data a un tipo específico
+  createBudgetInfo({ data, createdBy }: { data: IBudgetInfoEntity; createdBy: string }): Promise<void>;
+}
+
 // ---------------------------------------------
 // Interfaces de Dependencias de la Aplicación
 // ---------------------------------------------
@@ -176,6 +202,7 @@ export interface AppDependencies {
   contractController: IContractController;
   authController: IAuthController;
   authMiddleware: IAuthMiddleware;
+  budgetController: IBudgetController;
 }
 
 // ---------------------------------------------

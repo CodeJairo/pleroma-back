@@ -32,7 +32,8 @@ export class AuthController implements IAuthController {
 
   async logout(_req: Request, res: Response): Promise<any> {
     try {
-      return await res.status(200).json({ message: 'Logout successful' });
+      res.clearCookie('auth_token');
+      return res.status(200).json({ message: 'Logout successful' });
     } catch (error) {
       handleError(error, res);
     }

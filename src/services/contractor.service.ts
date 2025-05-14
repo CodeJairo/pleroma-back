@@ -1,5 +1,5 @@
 import { ConflictError, CustomError, InternalServerError, redisClient } from '@utils/index';
-import { IContractModel, IContractService, IJuridicalPerson } from 'types';
+import { IContractModel, IContractService, IJuridicalPersonEntity } from 'types';
 
 export class ContractService implements IContractService {
   #contractModel;
@@ -19,7 +19,7 @@ export class ContractService implements IContractService {
     }
   }
 
-  async createJuridicalPerson({ data, createdBy }: { data: IJuridicalPerson; createdBy: string }): Promise<void> {
+  async createJuridicalPerson({ data, createdBy }: { data: IJuridicalPersonEntity; createdBy: string }): Promise<void> {
     try {
       const existJuridicalPerson = await this.#contractModel.getJuridicalPerson({
         document: data.businessDocumentNumber,

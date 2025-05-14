@@ -24,7 +24,7 @@ model User {
   username  String   @unique
   email     String   @unique
   password  String
-  role      UserRole @default(USER) // USER, ADMIN
+  role      UserRole @default(USER)
   isActive  Boolean  @default(true)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -33,7 +33,7 @@ model User {
 model JuridicalPerson {
   id                     String @id @default(uuid()) @db.Uuid
   businessName           String @db.VarChar(50)
-  businessDocumentType   String @default("NIT") @db.VarChar(3) // Tipo de documento, por defecto NIT
+  businessDocumentType   String @default("NIT") @db.VarChar(3)
   businessDocumentNumber String @db.VarChar(20)
 
   // Legal Representative Information
@@ -42,7 +42,7 @@ model JuridicalPerson {
   documentNumber    String   @db.VarChar(20)
   expeditionAddress String   @db.VarChar(255)
   birthDate         DateTime @db.Date
-  genre             String   @db.Char(1) // M or F
+  genre             String   @db.Char(1)
 
   // Contact Information
   address String  @db.VarChar(50)
@@ -87,4 +87,30 @@ model NaturalPerson {
   createdBy String   @db.Uuid
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+}
+
+model BudgetInformation {
+  id                  String   @id @default(uuid()) @db.Uuid
+  certificateNumber   String   @db.VarChar(50) // Número de Certificado de Disponibilidad Presupuestal
+  issuanceDate        DateTime @db.Date // Fecha de Expedición
+  totalAssignedAmount Decimal  @db.Decimal(10, 2) // Total de las cantidades asignadas 
+
+  rubros Rubro[] // Relación con los rubros
+
+  createdBy String   @db.Uuid // ID del creador del presupuesto
+  createdAt DateTime @default(now()) // Fecha de creación
+  updatedAt DateTime @updatedAt // Fecha de última actualización
+}
+
+model Rubro {
+  id             String  @id @default(uuid()) @db.Uuid
+  name           String  @db.VarChar(100) // Nombre del Rubro
+  code           String  @db.VarChar(20) // Código del Rubro
+  assignedAmount Decimal @db.Decimal(10, 2) // Cantidad Asignada 
+
+  budgetInformationId String            @db.Uuid // Relación con el presupuesto
+  budgetInformation   BudgetInformation @relation(fields: [budgetInformationId], references: [id])
+
+  createdAt DateTime @default(now()) // Fecha de creación
+  updatedAt DateTime @updatedAt // Fecha de última actualización
 }
