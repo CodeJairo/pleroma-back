@@ -19,4 +19,7 @@ export const createApp = ({ contractController, authController, authMiddleware, 
   app.listen(config.port, () => {
     console.log(`Server is running on http://localhost:${config.port}`);
   });
+
+return app;
+
 };
