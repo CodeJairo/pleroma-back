@@ -21,6 +21,13 @@ export function generateToken(payload: object, expiresIn: any = '1h') {
   }
 }
 
+/**
+ * Verifies a JWT token and returns the decoded payload.
+ *
+ * @param token - The JWT token string to verify.
+ * @returns The decoded payload of the verified token.
+ * @throws {UnauthorizedError} If the token verification fails.
+ */
 export function verifyToken(token: string): any {
   try {
     const decoded = jwt.verify(token, JWT_SECRET!);
@@ -30,6 +37,13 @@ export function verifyToken(token: string): any {
   }
 }
 
+/**
+ * Decodes a JWT token and returns its payload.
+ *
+ * @param token - The JWT token string to decode.
+ * @returns The decoded payload of the token, or `null` if the token is invalid.
+ * @throws UnauthorizedError If there is an error decoding the token.
+ */
 export function decodeToken(token: string): any {
   try {
     const decoded = jwt.decode(token);
