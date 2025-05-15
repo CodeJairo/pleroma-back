@@ -1,6 +1,6 @@
 import jwt, { SignOptions } from 'jsonwebtoken';
 import { UnauthorizedError } from '@utils/index';
-import config from 'config/config';
+import config from '../config/config';
 
 const JWT_SECRET = config.jwtSecret;
 if (!JWT_SECRET) throw new UnauthorizedError('JWT secret is not configured');
