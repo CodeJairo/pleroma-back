@@ -1,6 +1,5 @@
 import express from 'express';
 import { AppDependencies } from 'types';
-import config from './config/config';
 import { createContractRouter, createBudgetInfoRouter, createAuthRouter } from '@routes/index';
 import { limiter } from '@middlewares/index';
 import cookieParser from 'cookie-parser';
@@ -16,10 +15,5 @@ export const createApp = ({ contractController, authController, authMiddleware, 
   app.use('/auth', createAuthRouter({ authController, authMiddleware }));
   app.use('/budget', createBudgetInfoRouter({ authMiddleware, budgetController }));
 
-  app.listen(config.port, () => {
-    console.log(`Server is running on http://localhost:${config.port}`);
-  });
-
-return app;
-
+  return app;
 };

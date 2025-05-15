@@ -16,6 +16,7 @@ import { AuthModel, BudgetModel, ContractModel } from '@models/index';
 import { ContractService, AuthService, BudgetService } from '@services/index';
 import { ContractController, AuthController, BudgetController } from '@controllers/index';
 import { AuthMiddleware } from '@middlewares/auth';
+import config from 'config/config';
 
 // Instantiate the models
 const contractModel: IContractModel = new ContractModel();
@@ -35,4 +36,8 @@ const budgetController: IBudgetController = new BudgetController({ budgetService
 // Instantiate the Middlewares
 const authMiddleware: IAuthMiddleware = new AuthMiddleware({ authService });
 
-createApp({ contractController, authController, authMiddleware, budgetController } as AppDependencies);
+const app = createApp({ contractController, authController, authMiddleware, budgetController } as AppDependencies);
+
+app.listen(config.port, () => {
+  console.log(`Server is running on http://localhost:${config.port}`);
+});
