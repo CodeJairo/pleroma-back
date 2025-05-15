@@ -11,6 +11,7 @@ interface IBudgetRouterDependencies {
 export const createBudgetInfoRouter = ({ budgetController, authMiddleware }: IBudgetRouterDependencies) => {
   const budgetInfoRouter = Router();
   budgetInfoRouter.use(authMiddleware.isAuthenticated);
+
   budgetInfoRouter.post('/create-budget-info', validateRequest(validateBudgetInformation), budgetController.createBudgetInfo);
   budgetInfoRouter.get('/get-budget-info', budgetController.getAllBudgetInfo);
   return budgetInfoRouter;

@@ -1,3 +1,4 @@
+export * from './auth-cookie';
 export * from './bcrypt';
 export * from './custom-errors';
 export * from './handle-error';

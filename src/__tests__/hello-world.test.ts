@@ -1,3 +1,5 @@
+// TODO: Implement testing for the entire project
+
 import { describe, test, expect } from '@jest/globals';
 
 describe('Hello World', () => {

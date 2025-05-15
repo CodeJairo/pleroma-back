@@ -1,7 +1,6 @@
 import { Request, Response } from 'express';
 import { IAuthController, IAuthService } from 'types';
-import { handleError, InternalServerError } from '@utils/index';
-import config from 'config/config';
+import { handleError, InternalServerError, setAuthCookie } from '@utils/index';
 
 export class AuthController implements IAuthController {
   #authService;
@@ -10,7 +9,7 @@ export class AuthController implements IAuthController {
     this.#authService = authService;
   }
 
-  register = async (req: Request, res: Response): Promise<any> => {
+  register = async (req: Request, res: Response) => {
     try {
       await this.#authService.register({ data: req.body });
       return res.status(201).json({ message: 'User registered successfully' });
@@ -19,31 +18,22 @@ export class AuthController implements IAuthController {
     }
   };
 
-  login = async (req: Request, res: Response): Promise<any> => {
+  login = async (req: Request, res: Response) => {
     try {
-      const token: string = await this.#authService.login({ data: req.body });
-      this.#setAuthCookie(res, token);
-      return res.status(200).json({ message: 'Login successful' });
+      const token = await this.#authService.login({ data: req.body });
+      setAuthCookie(res, token.refreshToken);
+      return res.status(200).json({ accessToken: token.accessToken });
     } catch (error) {
       return handleError(error, res);
     }
   };
 
-  async logout(_req: Request, res: Response): Promise<any> {
+  async logout(_req: Request, res: Response) {
     try {
       res.clearCookie('auth_token');
       return res.status(200).json({ message: 'Logout successful' });
     } catch (error) {
-      handleError(error, res);
+      return handleError(error, res);
     }
   }
-
-  #setAuthCookie = (res: Response, token: string) => {
-    res.cookie('auth_token', token, {
-      httpOnly: true,
-      secure: config.nodeEnvironment === 'production',
-      sameSite: 'none',
-      maxAge: 1000 * 60 * 60, // 1 hour
-    });
-  };
 }

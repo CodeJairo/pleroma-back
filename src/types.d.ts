@@ -186,9 +186,10 @@ export interface IContractService {
 
 export interface IAuthService {
   register({ data }: { data: IUserRegister }): Promise<void>;
-  login({ data }: { data: IUserLogin }): Promise<string>;
+  login({ data }: { data: IUserLogin }): Promise<{ accessToken: string; refreshToken: string }>;
   isUserActive({ id }: { id: string }): Promise<boolean>;
   isUserAdmin({ id }: { id: string }): Promise<boolean>;
+  // refreshToken({ token }: { token: string }): Promise<{ accessToken: string; refreshToken: string }>;
   // logout(req: Request, res: Response): Promise<any>;
   // refreshToken(req: Request, res: Response): Promise<any>;
   // forgotPassword(req: Request, res: Response): Promise<any>;

@@ -1,19 +1,34 @@
-# Dependencias
-node_modules
+# Node.js and Express
+node_modules/
+dist/
+build/
+coverage/
 
-# Builds
-dist
-build
-out
+# TypeScript files compiled to JavaScript
+*.js
+*.d.ts
 
-# Config y entorno
-.env
+# TypeScript config files (ignored as they don't require formatting)
+tsconfig.json
+tsconfig.build.json
+
+# Logs
 *.log
+*.log.*
 
-# Cache y editor
-.vscode
-.cache
+# Environment files
+.env
+.env.* 
 
-# Archivos comunes que no se deben formatear
-package-lock.json
-yarn.lock
+# Testing files (if using jest or other testing tools)
+test/
+tests/
+
+# Temporary files or folders
+.vscode/
+.idea/
+*.swp
+
+# OS-specific files
+.DS_Store
+Thumbs.db
