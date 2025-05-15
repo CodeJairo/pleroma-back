@@ -1,8 +1,6 @@
-import { InternalServerError, UnauthorizedError } from '@utils/custom-errors';
 import { Request, Response, NextFunction } from 'express';
-import { verifyToken } from '@utils/jwt';
+import { verifyToken, handleError, InternalServerError, UnauthorizedError } from '@utils/index';
 import { IAuthMiddleware, IAuthService } from 'types';
-import { handleError } from '@utils/handle-error';
 
 export class AuthMiddleware implements IAuthMiddleware {
   #authService;

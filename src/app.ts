@@ -1,11 +1,9 @@
 import express from 'express';
 import { AppDependencies } from 'types';
 import config from './config/config';
-import { createContractRouter } from '@routes/index';
-import { limiter } from '@middlewares/rate-limit';
-import { createAuthRouter } from '@routes/auth.routes';
+import { createContractRouter, createBudgetInfoRouter, createAuthRouter } from '@routes/index';
+import { limiter } from '@middlewares/index';
 import cookieParser from 'cookie-parser';
-import { createBudgetInfoRouter } from '@routes/budget-info.routes';
 
 export const createApp = ({ contractController, authController, authMiddleware, budgetController }: AppDependencies) => {
   const app = express();

@@ -1,5 +1,5 @@
-import { validateRequest } from '@middlewares/validate-request';
-import { validateBudgetInformation } from '@schemas/budget-information.schema';
+import { validateRequest } from '@middlewares/index';
+import { validateBudgetInformation } from '@schemas/index';
 import { Router } from 'express';
 import { IAuthMiddleware, IBudgetController } from 'types';
 

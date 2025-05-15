@@ -1,6 +1,6 @@
+import { InternalServerError } from '@utils/index';
 import { IBudgetInfoEntity, IBudgetModel, IRubro } from 'types';
 import prisma from './prisma';
-import { InternalServerError } from '@utils/custom-errors';
 
 export class BudgetModel implements IBudgetModel {
   async createBudgetInfo({ data, createdBy }: { data: IBudgetInfoEntity; createdBy: string }): Promise<void> {

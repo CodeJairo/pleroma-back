@@ -1,6 +1,6 @@
 import { IContractModel, IJuridicalPersonEntity } from 'types';
 import prisma from './prisma';
-import { InternalServerError } from '@utils/custom-errors';
+import { InternalServerError } from '@utils/index';
 
 export class ContractModel implements IContractModel {
   async getAllJuridicalPersonByDocumentNumber({ document, createdBy }: { document: string; createdBy: string }) {

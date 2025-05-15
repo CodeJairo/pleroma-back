@@ -1,6 +1,6 @@
 import { IAuthModel, IUserEntity, IUserRegister } from 'types';
 import prisma from './prisma';
-import { InternalServerError } from '@utils/custom-errors';
+import { InternalServerError } from '@utils/index';
 
 export class AuthModel implements IAuthModel {
   async register({ data }: { data: IUserRegister }): Promise<IUserEntity> {

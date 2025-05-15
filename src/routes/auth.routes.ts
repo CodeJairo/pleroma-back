@@ -1,5 +1,5 @@
-import { validateRequest } from '@middlewares/validate-request';
-import { validateLogin, validateUser } from '@schemas/user.schema';
+import { validateRequest } from '@middlewares/index';
+import { validateLogin, validateUser } from '@schemas/index';
 import { Router } from 'express';
 import { IAuthController, IAuthMiddleware } from 'types';
 
