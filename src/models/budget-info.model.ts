@@ -52,6 +52,9 @@ export class BudgetModel implements IBudgetModel {
         include: {
           rubros: true,
         },
+        orderBy: {
+          certificateNumber: 'asc',
+        },
       });
     } catch (error) {
       throw new InternalServerError('Error getting all budget info');
@@ -70,6 +73,9 @@ export class BudgetModel implements IBudgetModel {
         },
         include: {
           rubros: true,
+        },
+        orderBy: {
+          certificateNumber: 'asc',
         },
       });
     } catch (error) {
