@@ -50,10 +50,10 @@ export class AuthService implements IAuthService {
       const isPasswordValid = await comparePasswords(data.password, user.password);
       if (!isPasswordValid) throw new UnauthorizedError('Invalid password');
       const payload = { id: user.id, username: user.username };
-      const accessToken = generateToken(payload, '1h');
-      const refreshToken = generateToken(payload, '7d');
+      const clientToken = generateToken(payload, '1h');
+      const serverToken = generateToken(payload, '7d');
 
-      return { accessToken, refreshToken };
+      return { clientToken, serverToken };
     } catch (error) {
       if (error instanceof CustomError) throw error;
       throw new InternalServerError('Error logging in user');

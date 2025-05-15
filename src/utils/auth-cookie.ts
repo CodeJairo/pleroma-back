@@ -7,18 +7,18 @@ import config from 'config/config';
  * @param res - The HTTP response object where the cookie will be set.
  * @param token - The authentication token to be stored in the cookie.
  *
- * The cookie is configured with the following properties:
- * - `httpOnly`: Ensures the cookie is only accessible via HTTP(S) requests and not client-side scripts.
- * - `secure`: Indicates whether the cookie should only be sent over HTTPS. This is determined by the `nodeEnvironment` configuration.
- * - `sameSite`: Set to 'none' to allow cross-site requests.
- * - `maxAge`: Specifies the duration (in milliseconds) for which the cookie is valid. In this case, 1 hour.
+ * The cookie is configured with:
+ * - `httpOnly`: Prevents client-side access.
+ * - `secure`: Only sent over HTTPS in production.
+ * - `sameSite`: 'none' for cross-site requests, 'strict' in production.
+ * - `maxAge`: Cookie expires in 2 days.
  */
 export function setAuthCookie(res: Response, token: string): void {
   res.cookie('auth_token', token, {
     httpOnly: true,
     secure: config.nodeEnvironment === 'production',
-    sameSite: 'none',
-    maxAge: 1000 * 60 * 60, // 1 hour
+    sameSite: config.nodeEnvironment === 'production' ? 'strict' : 'none',
+    maxAge: 1000 * 60 * 60 * 48, // 2 days
   });
   return;
 }

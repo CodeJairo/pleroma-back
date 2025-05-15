@@ -186,7 +186,7 @@ export interface IContractService {
 
 export interface IAuthService {
   register({ data }: { data: IUserRegister }): Promise<void>;
-  login({ data }: { data: IUserLogin }): Promise<{ accessToken: string; refreshToken: string }>;
+  login({ data }: { data: IUserLogin }): Promise<{ serverToken: string; clientToken: string }>;
   isUserActive({ id }: { id: string }): Promise<boolean>;
   isUserAdmin({ id }: { id: string }): Promise<boolean>;
   // refreshToken({ token }: { token: string }): Promise<{ accessToken: string; refreshToken: string }>;
