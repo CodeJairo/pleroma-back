@@ -1,5 +1,9 @@
 # Pleroma Backend
 
+### Descripción del Proyecto
+
+Pleroma es un software diseñado para la generación y gestión de contratos de manera eficiente. Actualmente, el proyecto se encuentra en proceso de construcción, por lo que algunas funcionalidades pueden estar incompletas o sujetas a cambios.
+
 ## Requisitos Previos
 
 - [Node.js](https://nodejs.org/) (versión 16 o superior)
