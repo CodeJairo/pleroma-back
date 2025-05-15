@@ -65,6 +65,17 @@ export class AuthService implements IAuthService {
     return generateToken(payload, '1h');
   }
 
+  async logout(token: string) {
+    try {
+      if (!token) throw new UnauthorizedError('User is not authenticated');
+      const blacklistedTokenKey = generateRedisKey('blacklist', token);
+      await setRedisCache(blacklistedTokenKey, true, 60 * 60 * 24); // 1 day
+    } catch (error) {
+      if (error instanceof CustomError) throw error;
+      throw new InternalServerError('Error logging out user');
+    }
+  }
+
   async isUserActive({ id }: { id: string }) {
     try {
       const redisKey = generateRedisKey('user', id, 'isActive');

@@ -38,8 +38,9 @@ export class AuthController implements IAuthController {
     }
   };
 
-  logout = async (_req: Request, res: Response) => {
+  logout = async (req: Request, res: Response) => {
     try {
+      await this.#authService.logout(req.cookies.auth_token);
       res.clearCookie('auth_token');
       return res.status(200).json({ message: 'Logout successful' });
     } catch (error) {

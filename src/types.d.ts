@@ -190,8 +190,8 @@ export interface IAuthService {
   isUserActive({ id }: { id: string }): Promise<boolean>;
   isUserAdmin({ id }: { id: string }): Promise<boolean>;
   refreshToken(payload: { id: string; username: string }): string;
+  logout(token: string): Promise<void>;
   // refreshToken({ token }: { token: string }): Promise<{ accessToken: string; refreshToken: string }>;
-  // logout(req: Request, res: Response): Promise<any>;
   // refreshToken(req: Request, res: Response): Promise<any>;
   // forgotPassword(req: Request, res: Response): Promise<any>;
   // resetPassword(req: Request, res: Response): Promise<any>;
