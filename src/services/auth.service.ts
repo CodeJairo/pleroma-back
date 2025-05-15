@@ -51,7 +51,7 @@ export class AuthService implements IAuthService {
       if (!isPasswordValid) throw new UnauthorizedError('Invalid password');
       const payload = { id: user.id, username: user.username };
       const clientToken = generateToken(payload, '1h');
-      const serverToken = generateToken(payload, '7d');
+      const serverToken = generateToken(payload, '1d');
 
       return { clientToken, serverToken };
     } catch (error) {

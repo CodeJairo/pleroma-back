@@ -11,14 +11,14 @@ import config from 'config/config';
  * - `httpOnly`: Prevents client-side access.
  * - `secure`: Only sent over HTTPS in production.
  * - `sameSite`: 'none' for cross-site requests, 'strict' in production.
- * - `maxAge`: Cookie expires in 2 days.
+ * - `maxAge`: Cookie expires in 1 day.
  */
 export function setAuthCookie(res: Response, token: string): void {
   res.cookie('auth_token', token, {
     httpOnly: true,
     secure: config.nodeEnvironment === 'production',
     sameSite: config.nodeEnvironment === 'production' ? 'strict' : 'none',
-    maxAge: 1000 * 60 * 60 * 48, // 2 days
+    maxAge: 1000 * 60 * 60 * 24, // 1 day
   });
   return;
 }

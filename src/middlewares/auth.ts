@@ -63,11 +63,11 @@ export class AuthMiddleware implements IAuthMiddleware {
 
       // Blacklist the previous token
       const blacklistedTokenKey = generateRedisKey('blacklist', token);
-      await setRedisCache(blacklistedTokenKey, true, 60 * 60 * 48); // 2 days
+      await setRedisCache(blacklistedTokenKey, true, 60 * 60 * 24); // 1 day
 
       // Generate and set a new token
       const payload = { id: decoded.id, username: decoded.username };
-      const newToken = generateToken(payload, '2d');
+      const newToken = generateToken(payload, '1d');
       setAuthCookie(res, newToken);
 
       next();
@@ -90,11 +90,11 @@ export class AuthMiddleware implements IAuthMiddleware {
 
       // Blacklist the previous token
       const blacklistedTokenKey = generateRedisKey('blacklist', token);
-      await setRedisCache(blacklistedTokenKey, true, 60 * 60 * 48); // 2 days
+      await setRedisCache(blacklistedTokenKey, true, 60 * 60 * 24); // 1 day
 
       // Generate and set a new token
       const payload = { id: decoded.id, username: decoded.username };
-      const newToken = generateToken(payload, '1h');
+      const newToken = generateToken(payload, '1d');
       setAuthCookie(res, newToken);
 
       next();
