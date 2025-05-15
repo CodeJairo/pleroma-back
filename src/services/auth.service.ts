@@ -49,6 +49,7 @@ export class AuthService implements IAuthService {
       if (!user.isActive) throw new UnauthorizedError('User is not active, please contact support');
       const isPasswordValid = await comparePasswords(data.password, user.password);
       if (!isPasswordValid) throw new UnauthorizedError('Invalid password');
+
       const payload = { id: user.id, username: user.username };
       const clientToken = generateToken(payload, '1h');
       const serverToken = generateToken(payload, '1d');
@@ -58,6 +59,10 @@ export class AuthService implements IAuthService {
       if (error instanceof CustomError) throw error;
       throw new InternalServerError('Error logging in user');
     }
+  }
+
+  refreshToken(payload: { id: string; username: string }) {
+    return generateToken(payload, '1h');
   }
 
   async isUserActive({ id }: { id: string }) {

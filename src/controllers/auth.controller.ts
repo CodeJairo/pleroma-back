@@ -28,12 +28,22 @@ export class AuthController implements IAuthController {
     }
   };
 
-  async logout(_req: Request, res: Response) {
+  refreshToken = (req: Request, res: Response) => {
+    try {
+      const payload = { id: req.user!.id, username: req.user!.username };
+      const clientToken = this.#authService.refreshToken(payload);
+      return res.status(200).json({ clientToken });
+    } catch (error) {
+      return handleError(error, res);
+    }
+  };
+
+  logout = async (_req: Request, res: Response) => {
     try {
       res.clearCookie('auth_token');
       return res.status(200).json({ message: 'Logout successful' });
     } catch (error) {
       return handleError(error, res);
     }
-  }
+  };
 }

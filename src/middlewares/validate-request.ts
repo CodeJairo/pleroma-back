@@ -1,6 +1,11 @@
 import { NextFunction, Request, Response } from 'express';
 import { ZodIssue } from 'zod';
 
+/**
+ * Middleware to validate request body using Zod schemas.
+ * @param validateMethod - The Zod validation method to use.
+ * @returns A middleware function that validates the request body.
+ */
 export const validateRequest =
   (validateMethod: Function) =>
   (req: Request, res: Response, next: NextFunction): void | any => {

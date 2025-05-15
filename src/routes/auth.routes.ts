@@ -13,6 +13,7 @@ export const createAuthRouter = ({ authController, authMiddleware }: AuthRouterD
 
   authRouter.post('/register', authMiddleware.isAdmin, validateRequest(validateUser), authController.register);
   authRouter.post('/login', validateRequest(validateLogin), authController.login);
+  authRouter.post('/refresh-token', authMiddleware.isAuthenticated, authController.refreshToken);
   authRouter.delete('/logout', authController.logout);
 
   return authRouter;

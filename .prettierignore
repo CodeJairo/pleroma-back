@@ -6,7 +6,7 @@ coverage/
 
 # TypeScript files compiled to JavaScript
 *.js
-*.d.ts
+# *.d.ts
 
 # TypeScript config files (ignored as they don't require formatting)
 tsconfig.json
