@@ -1,13 +1,14 @@
 import { IAuthModel, IUserEntity, IUserRegister } from 'types';
 import prisma from './prisma';
-import { InternalServerError } from '@utils/index';
+import { ConflictError, InternalServerError } from '@utils/index';
 
 export class AuthModel implements IAuthModel {
   async register({ data }: { data: IUserRegister }): Promise<IUserEntity> {
     try {
       const user = await prisma.user.create({ data: { ...data } });
       return user;
-    } catch (error) {
+    } catch (error: any) {
+      if (error.code === 'P2002') throw new ConflictError(error.meta.target[0] + ' already exists');
       throw new InternalServerError('Error registering user');
     }
   }
@@ -33,7 +34,8 @@ export class AuthModel implements IAuthModel {
         },
       });
       return user;
-    } catch (error) {
+    } catch (error: any) {
+      // if (error.code === 'P2025') throw new ConflictError('User not found');
       throw new InternalServerError('Error getting user by ID');
     }
   }
@@ -63,7 +65,8 @@ export class AuthModel implements IAuthModel {
         },
       });
       return;
-    } catch (error) {
+    } catch (error: any) {
+      if (error.code === 'P2002') throw new ConflictError(error.meta.target[0] + ' already exists');
       throw new InternalServerError('Error updating user');
     }
   }

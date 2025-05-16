@@ -30,7 +30,6 @@ export class AuthController implements IAuthController {
 
   updateUser = async (req: Request, res: Response): Promise<any> => {
     try {
-      console.log('Token from cookie:', req.token);
       await this.#authService.updateUser({ id: req.user!.id, data: req.body });
       const clientToken = this.#authService.refreshClientToken({ id: req.user!.id, username: req.user!.username });
       const serverToken = await this.#authService.refreshServerToken(

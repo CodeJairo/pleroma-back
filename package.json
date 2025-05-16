@@ -37,7 +37,6 @@
     "express": "5.1.0",
     "express-rate-limit": "7.5.0",
     "jsonwebtoken": "9.0.2",
-
     "rate-limit-redis": "4.2.0",
     "redis": "5.0.1",
     "tsconfig-paths": "4.2.0",
