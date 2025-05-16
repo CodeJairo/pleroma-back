@@ -47,9 +47,14 @@ export class AuthController implements IAuthController {
     throw new Error('Method not implemented.');
   }
 
-  deleteUser(_req: Request, _res: Response): Promise<any> {
-    throw new Error('Method not implemented.');
-  }
+  deleteUser = async (req: Request, res: Response) => {
+    try {
+      await this.#authService.deleteUser({ id: req.params.id });
+      return res.status(200).json({ message: 'User deleted successfully' });
+    } catch (error) {
+      return handleError(error, res);
+    }
+  };
   activateUser(_req: Request, _res: Response): Promise<any> {
     throw new Error('Method not implemented.');
   }

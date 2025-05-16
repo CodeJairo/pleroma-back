@@ -161,6 +161,7 @@ export interface IAuthModel {
   getUserById({ id }: { id: string }): Promise<IUserEntity | null>;
   getUserByUsername({ username }: { username: string }): Promise<IUserEntity | null>;
   updateUser({ id, data }: { id: string; data: Partial<IUserRegister> }): Promise<void>;
+  deleteUser({ id }: { id: string }): Promise<void>;
 }
 
 export interface IBudgetModel {
@@ -197,6 +198,7 @@ export interface IAuthService {
   refreshServerToken(payload: { id: string; username: string }, token: string): Promise<string>;
   logout(token: string): Promise<void>;
   updateUser({ id, data }: { id: string; data: Partial<IUserRegister> }): Promise<void>;
+  deleteUser({ id }: { id: string }): Promise<void>;
   // refreshToken({ token }: { token: string }): Promise<{ accessToken: string; refreshToken: string }>;
   // refreshToken(req: Request, res: Response): Promise<any>;
   // forgotPassword(req: Request, res: Response): Promise<any>;

@@ -40,7 +40,10 @@ export class AuthMiddleware implements IAuthMiddleware {
     // Verify the token and user status
     const decoded = verifyToken(token);
     const isActive = await this.#authService.isUserActive({ id: decoded.id });
-    if (!isActive) throw new UnauthorizedError('User is not active');
+    if (!isActive) {
+      res.clearCookie('auth_token');
+      throw new UnauthorizedError('User is not active');
+    }
 
     if (isAdminCheck) {
       const isAdmin = await this.#authService.isUserAdmin({ id: decoded.id });

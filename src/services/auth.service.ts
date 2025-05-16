@@ -11,6 +11,7 @@ import {
   generateRedisKey,
   setRedisCache,
   deleteRedisCache,
+  BadRequestError,
 } from '@utils/index';
 import { IAuthModel, IAuthService, IUserRegister, IUserLogin } from 'types';
 
@@ -103,6 +104,18 @@ export class AuthService implements IAuthService {
     }
   }
 
+  async deleteUser({ id }: { id: string }) {
+    try {
+      if (!id || typeof id !== 'string' || id === '') throw new BadRequestError('Invalid id');
+      await this.#authModel.deleteUser({ id });
+      const redisKey = generateRedisKey('user', id, 'isActive');
+      await deleteRedisCache(redisKey);
+    } catch (error) {
+      if (error instanceof CustomError) throw error;
+      throw new InternalServerError('Error deleting user');
+    }
+  }
+
   async isUserActive({ id }: { id: string }) {
     try {
       const redisKey = generateRedisKey('user', id, 'isActive');
@@ -115,6 +128,7 @@ export class AuthService implements IAuthService {
       if (!user) throw new NotFoundError('User not found');
       if (user.isActive) await setRedisCache(redisKey, true, 60 * 60 * 24);
       if (!user.isActive) await deleteRedisCache(redisKey);
+
       return user.isActive;
     } catch (error) {
       if (error instanceof CustomError) throw error;
