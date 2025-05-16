@@ -53,4 +53,18 @@ export class AuthModel implements IAuthModel {
       throw new InternalServerError('Error getting user by username');
     }
   }
+
+  async updateUser({ id, data }: { id: string; data: Partial<IUserRegister> }) {
+    try {
+      await prisma.user.update({
+        where: { id },
+        data: {
+          ...data,
+        },
+      });
+      return;
+    } catch (error) {
+      throw new InternalServerError('Error updating user');
+    }
+  }
 }

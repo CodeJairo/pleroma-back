@@ -8,6 +8,7 @@ declare global {
   namespace Express {
     interface Request {
       user?: RequestPayload;
+      token?: string;
     }
   }
 }
@@ -125,12 +126,14 @@ export interface IAuthController {
   login(req: Request, res: Response): Promise<any>;
   logout(req: Request, res: Response): Promise<any>;
   refreshToken(req: Request, res: Response): any;
+  updateUser(req: Request, res: Response): Promise<any>;
+  deleteUser(req: Request, res: Response): Promise<any>;
+  activateUser(req: Request, res: Response): Promise<any>;
+
   // forgotPassword(req: Request, res: Response): Promise<any>;
   // resetPassword(req: Request, res: Response): Promise<any>;
   // verifyEmail(req: Request, res: Response): Promise<any>;
   // getUserProfile(req: Request, res: Response): Promise<any>;
-  // updateUserProfile(req: Request, res: Response): Promise<any>;
-  // deleteUserProfile(req: Request, res: Response): Promise<any>;
 }
 
 export interface IBudgetController {
@@ -157,6 +160,7 @@ export interface IAuthModel {
   getUserByEmail({ email }: { email: string }): Promise<IUserEntity | null>;
   getUserById({ id }: { id: string }): Promise<IUserEntity | null>;
   getUserByUsername({ username }: { username: string }): Promise<IUserEntity | null>;
+  updateUser({ id, data }: { id: string; data: Partial<IUserRegister> }): Promise<void>;
 }
 
 export interface IBudgetModel {
@@ -189,8 +193,10 @@ export interface IAuthService {
   login({ data }: { data: IUserLogin }): Promise<{ serverToken: string; clientToken: string }>;
   isUserActive({ id }: { id: string }): Promise<boolean>;
   isUserAdmin({ id }: { id: string }): Promise<boolean>;
-  refreshToken(payload: { id: string; username: string }): string;
+  refreshClientToken(payload: { id: string; username: string }): string;
+  refreshServerToken(payload: { id: string; username: string }, token: string): Promise<string>;
   logout(token: string): Promise<void>;
+  updateUser({ id, data }: { id: string; data: Partial<IUserRegister> }): Promise<void>;
   // refreshToken({ token }: { token: string }): Promise<{ accessToken: string; refreshToken: string }>;
   // refreshToken(req: Request, res: Response): Promise<any>;
   // forgotPassword(req: Request, res: Response): Promise<any>;

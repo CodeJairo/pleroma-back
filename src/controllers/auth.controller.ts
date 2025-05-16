@@ -28,10 +28,37 @@ export class AuthController implements IAuthController {
     }
   };
 
+  updateUser = async (req: Request, res: Response): Promise<any> => {
+    try {
+      console.log('Token from cookie:', req.token);
+      await this.#authService.updateUser({ id: req.user!.id, data: req.body });
+      const clientToken = this.#authService.refreshClientToken({ id: req.user!.id, username: req.user!.username });
+      const serverToken = await this.#authService.refreshServerToken(
+        { id: req.user!.id, username: req.user!.username },
+        req.cookies.auth_token
+      );
+      setAuthCookie(res, serverToken);
+      return res.status(200).json({ clientToken });
+    } catch (error) {
+      return handleError(error, res);
+    }
+  };
+
+  updateUserAsAdmin(_req: Request, _res: Response): Promise<any> {
+    throw new Error('Method not implemented.');
+  }
+
+  deleteUser(_req: Request, _res: Response): Promise<any> {
+    throw new Error('Method not implemented.');
+  }
+  activateUser(_req: Request, _res: Response): Promise<any> {
+    throw new Error('Method not implemented.');
+  }
+
   refreshToken = (req: Request, res: Response) => {
     try {
       const payload = { id: req.user!.id, username: req.user!.username };
-      const clientToken = this.#authService.refreshToken(payload);
+      const clientToken = this.#authService.refreshClientToken(payload);
       return res.status(200).json({ clientToken });
     } catch (error) {
       return handleError(error, res);

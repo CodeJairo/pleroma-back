@@ -69,6 +69,7 @@ export class AuthMiddleware implements IAuthMiddleware {
       const payload = { id: decoded.id, username: decoded.username };
       const newToken = generateToken(payload, '1d');
       setAuthCookie(res, newToken);
+      req.token = newToken;
 
       next();
     } catch (error) {

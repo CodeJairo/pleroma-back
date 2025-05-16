@@ -61,8 +61,35 @@ export class AuthService implements IAuthService {
     }
   }
 
-  refreshToken(payload: { id: string; username: string }) {
-    return generateToken(payload, '1h');
+  refreshClientToken(payload: { id: string; username: string }) {
+    try {
+      return generateToken(payload, '1h');
+    } catch (error) {
+      if (error instanceof CustomError) throw error;
+      throw new InternalServerError('Error refreshing token');
+    }
+  }
+
+  async refreshServerToken(payload: { id: string; username: string }, token: string) {
+    try {
+      const blacklistedTokenKey = generateRedisKey('blacklist', token);
+      await setRedisCache(blacklistedTokenKey, true, 60 * 60 * 24); // 1 day
+
+      return generateToken(payload, '1d');
+    } catch (error) {
+      if (error instanceof CustomError) throw error;
+      throw new InternalServerError('Error refreshing token');
+    }
+  }
+
+  async updateUser({ id, data }: { id: string; data: Partial<IUserRegister> }) {
+    try {
+      await this.#authModel.updateUser({ id, data });
+      return;
+    } catch (error) {
+      if (error instanceof CustomError) throw error;
+      throw new InternalServerError('Error updating user');
+    }
   }
 
   async logout(token: string) {
