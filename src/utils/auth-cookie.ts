@@ -1,5 +1,5 @@
 import { Response } from 'express';
-import config from 'config/config';
+import config from '../config/config';
 
 /**
  * Sets an authentication cookie in the HTTP response.
