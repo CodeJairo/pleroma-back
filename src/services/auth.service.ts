@@ -12,6 +12,7 @@ import {
   setRedisCache,
   deleteRedisCache,
   BadRequestError,
+  ForbiddenError,
 } from '@utils/index';
 import { IAuthModel, IAuthService, IUserRegister, IUserLogin } from 'types';
 
@@ -62,8 +63,10 @@ export class AuthService implements IAuthService {
     }
   }
 
-  refreshClientToken(payload: { id: string; username: string }) {
+  refreshClientToken({ id, username }: { id: string; username: string }) {
     try {
+      if (!id || !username) throw new UnauthorizedError('User is not authenticated');
+      const payload = { id, username };
       return generateToken(payload, '1h');
     } catch (error) {
       if (error instanceof CustomError) throw error;
@@ -83,9 +86,29 @@ export class AuthService implements IAuthService {
     }
   }
 
-  async updateUser({ id, data }: { id: string; data: Partial<IUserRegister> }) {
+  async updateUser({ id, username, token, data }: { id: string; username: string; token: string; data: Partial<IUserRegister> }) {
     try {
       await this.#authModel.updateUser({ id, data });
+      const redisKey = generateRedisKey('user', id, 'isActive');
+      const redisKey2 = generateRedisKey('user', id, 'isAdmin');
+      await deleteRedisCache(redisKey);
+      await deleteRedisCache(redisKey2);
+      const clientToken = this.refreshClientToken({ id, username });
+      const serverToken = await this.refreshServerToken({ id, username }, token);
+      return { clientToken, serverToken };
+    } catch (error) {
+      if (error instanceof CustomError) throw error;
+      throw new InternalServerError('Error updating user');
+    }
+  }
+
+  async updateUserAsAdmin({ id, data }: { id: string; data: Partial<IUserRegister> }) {
+    try {
+      await this.#authModel.updateUserAsAdmin({ id, data });
+      const redisKey = generateRedisKey('user', id, 'isActive');
+      const redisKey2 = generateRedisKey('user', id, 'isAdmin');
+      await deleteRedisCache(redisKey);
+      await deleteRedisCache(redisKey2);
       return;
     } catch (error) {
       if (error instanceof CustomError) throw error;
@@ -104,15 +127,28 @@ export class AuthService implements IAuthService {
     }
   }
 
-  async deleteUser({ id }: { id: string }) {
+  async deleteUser({ id, adminId }: { id: string; adminId: string }) {
     try {
-      if (!id || typeof id !== 'string' || id === '') throw new BadRequestError('Invalid id');
-      await this.#authModel.deleteUser({ id });
+      const user = await this.#authModel.getUserById({ id });
+      if (!user) throw new NotFoundError('User not found');
+      if (user.id === adminId) throw new ForbiddenError('Cannot delete your own account');
+      if (user.role === 'ADMIN') throw new ForbiddenError('Cannot delete an admin user');
+      if (!user.isActive) throw new BadRequestError('User is already inactive');
+      await this.#authModel.updateUserAsAdmin({ id, data: { isActive: false } });
       const redisKey = generateRedisKey('user', id, 'isActive');
       await deleteRedisCache(redisKey);
     } catch (error) {
       if (error instanceof CustomError) throw error;
       throw new InternalServerError('Error deleting user');
+    }
+  }
+
+  async activateUser({ id }: { id: string }) {
+    try {
+      await this.#authModel.updateUserAsAdmin({ id, data: { isActive: true } });
+    } catch (error) {
+      if (error instanceof CustomError) throw error;
+      throw new InternalServerError('Error activating user');
     }
   }
 

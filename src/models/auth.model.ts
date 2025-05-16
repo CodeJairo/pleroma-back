@@ -55,23 +55,6 @@ export class AuthModel implements IAuthModel {
     }
   }
 
-  async deleteUser({ id }: { id: string }) {
-    try {
-      await prisma.user.update({
-        where: { id },
-        data: {
-          isActive: false,
-        },
-      });
-      return;
-    } catch (error: any) {
-      console.log(error);
-      if (error.code === 'P2023') throw new BadRequestError('Invalid id');
-      if (error.code === 'P2025') throw new NotFoundError('User not found');
-      throw new InternalServerError('Error deleting user');
-    }
-  }
-
   async updateUser({ id, data }: { id: string; data: Partial<IUserRegister> }) {
     try {
       await prisma.user.update({
@@ -85,6 +68,22 @@ export class AuthModel implements IAuthModel {
       if (error.code === 'P2025') throw new NotFoundError('User not found');
       if (error.code === 'P2002') throw new ConflictError(error.meta.target[0] + ' already exists');
       throw new InternalServerError('Error updating user');
+    }
+  }
+
+  async updateUserAsAdmin({ id, data }: { id: string; data: Partial<IUserEntity> }) {
+    try {
+      await prisma.user.update({
+        where: { id },
+        data: {
+          ...data,
+        },
+      });
+      return;
+    } catch (error: any) {
+      if (error.code === 'P2023') throw new BadRequestError('Invalid id');
+      if (error.code === 'P2025') throw new NotFoundError('User not found');
+      throw new InternalServerError('Error activating user');
     }
   }
 }

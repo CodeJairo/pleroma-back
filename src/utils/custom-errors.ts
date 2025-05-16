@@ -64,7 +64,7 @@ export class UnauthorizedError extends CustomError {
  * HTTP status code 403
  * @param message - Optional. Defaults to 'Access denied'.
  */
-export class AuthorizationError extends CustomError {
+export class ForbiddenError extends CustomError {
   constructor(message = 'Access denied') {
     super(403, message);
   }

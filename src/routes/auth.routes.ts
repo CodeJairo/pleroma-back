@@ -14,10 +14,16 @@ export const createAuthRouter = ({ authController, authMiddleware }: AuthRouterD
   authRouter.post('/register', authMiddleware.isAdmin, validateRequest(validateUser), authController.register);
   authRouter.post('/login', validateRequest(validateLogin), authController.login);
   authRouter.patch('/update', authMiddleware.isAuthenticated, validateRequest(validateUpdateUser), authController.updateUser);
-  authRouter.patch('/update/:id', authMiddleware.isAdmin, validateRequest(validateUpdateUserAsAdmin), authController.updateUser);
+  authRouter.patch(
+    '/update/:id',
+    authMiddleware.isAdmin,
+    validateRequest(validateUpdateUserAsAdmin),
+    authController.updateUserAsAdmin
+  );
   authRouter.post('/refresh-token', authMiddleware.isAuthenticated, authController.refreshToken);
   authRouter.post('/logout', authController.logout);
   authRouter.delete('/delete/:id', authMiddleware.isAdmin, authController.deleteUser);
+  authRouter.patch('/activate/:id', authMiddleware.isAdmin, authController.activateUser);
 
   return authRouter;
 };

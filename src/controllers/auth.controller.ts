@@ -28,41 +28,51 @@ export class AuthController implements IAuthController {
     }
   };
 
-  updateUser = async (req: Request, res: Response): Promise<any> => {
+  updateUser = async (req: Request, res: Response) => {
     try {
-      await this.#authService.updateUser({ id: req.user!.id, data: req.body });
-      const clientToken = this.#authService.refreshClientToken({ id: req.user!.id, username: req.user!.username });
-      const serverToken = await this.#authService.refreshServerToken(
-        { id: req.user!.id, username: req.user!.username },
-        req.cookies.auth_token
-      );
-      setAuthCookie(res, serverToken);
-      return res.status(200).json({ clientToken });
+      const token = await this.#authService.updateUser({
+        id: req.user!.id,
+        username: req.user!.username,
+        token: req.cookies.auth_token,
+        data: req.body,
+      });
+      setAuthCookie(res, token.serverToken);
+      return res.status(200).json({ clientToken: token.clientToken });
     } catch (error) {
       return handleError(error, res);
     }
   };
 
-  updateUserAsAdmin(_req: Request, _res: Response): Promise<any> {
-    throw new Error('Method not implemented.');
-  }
+  updateUserAsAdmin = async (req: Request, res: Response) => {
+    try {
+      await this.#authService.updateUserAsAdmin({ id: req.params.id, data: req.body });
+      return res.status(200).json({ message: 'User updated successfully' });
+    } catch (error) {
+      return handleError(error, res);
+    }
+  };
 
   deleteUser = async (req: Request, res: Response) => {
     try {
-      await this.#authService.deleteUser({ id: req.params.id });
+      await this.#authService.deleteUser({ id: req.params.id, adminId: req.user!.id });
       return res.status(200).json({ message: 'User deleted successfully' });
     } catch (error) {
       return handleError(error, res);
     }
   };
-  activateUser(_req: Request, _res: Response): Promise<any> {
-    throw new Error('Method not implemented.');
-  }
+
+  activateUser = async (req: Request, res: Response) => {
+    try {
+      await this.#authService.activateUser({ id: req.params.id });
+      return res.status(200).json({ message: 'User activated successfully' });
+    } catch (error) {
+      return handleError(error, res);
+    }
+  };
 
   refreshToken = (req: Request, res: Response) => {
     try {
-      const payload = { id: req.user!.id, username: req.user!.username };
-      const clientToken = this.#authService.refreshClientToken(payload);
+      const clientToken = this.#authService.refreshClientToken({ id: req.user?.id, username: req.user?.username });
       return res.status(200).json({ clientToken });
     } catch (error) {
       return handleError(error, res);

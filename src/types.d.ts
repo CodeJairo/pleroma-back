@@ -127,6 +127,7 @@ export interface IAuthController {
   logout(req: Request, res: Response): Promise<any>;
   refreshToken(req: Request, res: Response): any;
   updateUser(req: Request, res: Response): Promise<any>;
+  updateUserAsAdmin(req: Request, res: Response): Promise<any>;
   deleteUser(req: Request, res: Response): Promise<any>;
   activateUser(req: Request, res: Response): Promise<any>;
 
@@ -161,7 +162,7 @@ export interface IAuthModel {
   getUserById({ id }: { id: string }): Promise<IUserEntity | null>;
   getUserByUsername({ username }: { username: string }): Promise<IUserEntity | null>;
   updateUser({ id, data }: { id: string; data: Partial<IUserRegister> }): Promise<void>;
-  deleteUser({ id }: { id: string }): Promise<void>;
+  updateUserAsAdmin({ id, data }: { id: string; data: Partial<IUserEntity> }): Promise<void>;
 }
 
 export interface IBudgetModel {
@@ -194,11 +195,23 @@ export interface IAuthService {
   login({ data }: { data: IUserLogin }): Promise<{ serverToken: string; clientToken: string }>;
   isUserActive({ id }: { id: string }): Promise<boolean>;
   isUserAdmin({ id }: { id: string }): Promise<boolean>;
-  refreshClientToken(payload: { id: string; username: string }): string;
+  refreshClientToken({ id: string, username: string }): string;
   refreshServerToken(payload: { id: string; username: string }, token: string): Promise<string>;
   logout(token: string): Promise<void>;
-  updateUser({ id, data }: { id: string; data: Partial<IUserRegister> }): Promise<void>;
-  deleteUser({ id }: { id: string }): Promise<void>;
+  updateUser({
+    id,
+    username,
+    token,
+    data,
+  }: {
+    id: string;
+    username: string;
+    token: string;
+    data: Partial<IUserRegister>;
+  }): Promise<{ serverToken: string; clientToken: string }>;
+  updateUserAsAdmin({ id, data }: { id: string; data: Partial<IUserEntity> }): Promise<void>;
+  deleteUser({ id, adminId }: { id: string; adminId: string }): Promise<void>;
+  activateUser({ id }: { id: string }): Promise<void>;
   // refreshToken({ token }: { token: string }): Promise<{ accessToken: string; refreshToken: string }>;
   // refreshToken(req: Request, res: Response): Promise<any>;
   // forgotPassword(req: Request, res: Response): Promise<any>;
