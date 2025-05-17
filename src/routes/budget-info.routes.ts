@@ -12,7 +12,84 @@ export const createBudgetInfoRouter = ({ budgetController, authMiddleware }: IBu
   const budgetInfoRouter = Router();
   budgetInfoRouter.use(authMiddleware.isAuthenticated);
 
+  /**
+   * @swagger
+   * tags:
+   *   name: Budget
+   *   description: Endpoints de gestión de presupuestos
+   */
+
+  /**
+   * @swagger
+   * /budget-info/create-budget-info:
+   *   post:
+   *     summary: Crear información de presupuesto
+   *     description: Crea un nuevo presupuesto con validaciones de número de certificado y fechas. Solo usuarios autenticados pueden acceder.
+   *     tags:
+   *       - Budget
+   *     security:
+   *       - cookieAuth: []
+   *     requestBody:
+   *       description: Información del presupuesto a crear
+   *       required: true
+   *       content:
+   *         application/json:
+   *           schema:
+   *             $ref: '#/components/schemas/BudgetInformation'
+   *     responses:
+   *       200:
+   *         description: Información de presupuesto creada exitosamente
+   *         content:
+   *           application/json:
+   *             schema:
+   *               type: object
+   *               properties:
+   *                 message:
+   *                   type: string
+   *                   example: Información de presupuesto creada exitosamente
+   *       400:
+   *         description: Datos inválidos o número de certificado o fecha inválida
+   *       401:
+   *         description: Credenciales inválidas o usuario no autorizado
+   *       403:
+   *         description: Acceso denegado. Se requieren privilegios de administrador.
+   *       409:
+   *         description: Número de certificado duplicado
+   */
+
   budgetInfoRouter.post('/create-budget-info', validateRequest(validateBudgetInformation), budgetController.createBudgetInfo);
+
+  /**
+   * @swagger
+   * /budget-info/get-budget-info:
+   *   get:
+   *     summary: Obtener información de presupuesto
+   *     description: Obtiene la información de presupuestos filtrada opcionalmente por número de certificado. Solo usuarios autenticados pueden acceder.
+   *     tags:
+   *       - Budget
+   *     security:
+   *       - cookieAuth: []
+   *     parameters:
+   *       - in: query
+   *         name: certificateNumber
+   *         schema:
+   *           type: string
+   *         description: Número de certificado para filtrar
+   *     responses:
+   *       200:
+   *         description: Información de presupuesto obtenida exitosamente
+   *         content:
+   *           application/json:
+   *             schema:
+   *               type: array
+   *               items:
+   *                 $ref: '#/components/schemas/BudgetInformation'
+   *       401:
+   *         description: Credenciales inválidas o usuario no autorizado
+   *       403:
+   *         description: Acceso denegado. Se requieren privilegios de administrador.
+   */
   budgetInfoRouter.get('/get-budget-info', budgetController.getAllBudgetInfo);
+
   return budgetInfoRouter;
 };
