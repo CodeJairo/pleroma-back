@@ -79,3 +79,13 @@ export class NotFoundError extends CustomError {
     super(404, message);
   }
 }
+
+/**
+ * HTTP status code 422
+ * @param message - Optional. Defaults to 'Unprocessable entity'.
+ */
+export class UnprocessableEntityError extends CustomError {
+  constructor(message = 'Unprocessable entity') {
+    super(422, message);
+  }
+}

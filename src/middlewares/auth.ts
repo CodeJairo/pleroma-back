@@ -1,7 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import {
   verifyToken,
-  handleError,
   InternalServerError,
   UnauthorizedError,
   generateToken,
@@ -77,7 +76,7 @@ export class AuthMiddleware implements IAuthMiddleware {
 
       next();
     } catch (error) {
-      handleError(error, res);
+      next(error);
     }
   };
 
@@ -104,7 +103,7 @@ export class AuthMiddleware implements IAuthMiddleware {
 
       next();
     } catch (error) {
-      handleError(error, res);
+      next(error);
     }
   };
 }

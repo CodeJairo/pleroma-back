@@ -32,17 +32,24 @@ const userSchema = z.object({
 });
 
 export function validateUser(data: unknown) {
-  return userSchema.pick({ username: true, email: true, password: true }).safeParse(data);
+  return userSchema.pick({ username: true, email: true, password: true }).strict().safeParse(data);
 }
 
 export function validateLogin(data: unknown) {
-  return userSchema.pick({ email: true, password: true }).safeParse(data);
+  return userSchema.pick({ email: true, password: true }).strict().safeParse(data);
 }
 
 export function validateUpdateUser(data: unknown) {
-  return userSchema.pick({ email: true, username: true, password: true }).partial().safeParse(data);
+  const schema = userSchema
+    .pick({ email: true, username: true, password: true })
+    .partial()
+    .strict()
+    .refine(obj => !!obj.email || !!obj.username || !!obj.password, {
+      message: 'At least one field must be provided',
+    });
+  return schema.safeParse(data);
 }
 
 export function validateUpdateUserAsAdmin(data: unknown) {
-  return userSchema.partial().safeParse(data);
+  return userSchema.partial().strict().safeParse(data);
 }

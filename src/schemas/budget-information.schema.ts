@@ -43,5 +43,5 @@ const BudgetInformationSchema = z.object({
 
 // Funciones de validación para la información presupuestaria
 export function validateBudgetInformation(data: unknown): SafeParseReturnType<unknown, z.infer<typeof BudgetInformationSchema>> {
-  return BudgetInformationSchema.safeParse(data);
+  return BudgetInformationSchema.strict().safeParse(data);
 }

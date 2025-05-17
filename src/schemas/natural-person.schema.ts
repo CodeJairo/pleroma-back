@@ -34,9 +34,7 @@ const NaturalPersonSchema = z.object({
     required_error: 'Expedition address is required',
   }),
 
-  birthDate: z
-    .string({ required_error: 'Birth Date is required', invalid_type_error: 'Birth Date must be a string' })
-    .date(),
+  birthDate: z.string({ required_error: 'Birth Date is required', invalid_type_error: 'Birth Date must be a string' }).date(),
 
   genre: z.enum(['M', 'F'], {
     invalid_type_error: 'Genre must be a string',
@@ -112,12 +110,10 @@ const NaturalPersonSchema = z.object({
     }),
 });
 
-export function validateNaturalPerson(
-  data: unknown
-): SafeParseReturnType<unknown, z.infer<typeof NaturalPersonSchema>> {
-  return NaturalPersonSchema.safeParse(data);
+export function validateNaturalPerson(data: unknown): SafeParseReturnType<unknown, z.infer<typeof NaturalPersonSchema>> {
+  return NaturalPersonSchema.strict().safeParse(data);
 }
 
 export function validateNaturalPersonUpdate(data: unknown) {
-  return NaturalPersonSchema.partial().safeParse(data);
+  return NaturalPersonSchema.partial().strict().safeParse(data);
 }

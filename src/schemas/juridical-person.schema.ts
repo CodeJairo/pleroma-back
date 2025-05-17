@@ -56,9 +56,7 @@ const JuridicalPersonSchema = z.object({
     required_error: 'Expedition address is required',
   }),
 
-  birthDate: z
-    .string({ required_error: 'Birth Date is required', invalid_type_error: 'Birth Date must be a string' })
-    .date(),
+  birthDate: z.string({ required_error: 'Birth Date is required', invalid_type_error: 'Birth Date must be a string' }).date(),
 
   genre: z.enum(['M', 'F'], {
     invalid_type_error: 'Genre must be a string',
@@ -134,12 +132,10 @@ const JuridicalPersonSchema = z.object({
     }),
 });
 
-export function validateJuridicalPerson(
-  data: unknown
-): SafeParseReturnType<unknown, z.infer<typeof JuridicalPersonSchema>> {
-  return JuridicalPersonSchema.safeParse(data);
+export function validateJuridicalPerson(data: unknown): SafeParseReturnType<unknown, z.infer<typeof JuridicalPersonSchema>> {
+  return JuridicalPersonSchema.strict().safeParse(data);
 }
 
 export function validateJuridicalPersonUpdate(data: unknown) {
-  return JuridicalPersonSchema.partial().safeParse(data);
+  return JuridicalPersonSchema.partial().strict().safeParse(data);
 }
