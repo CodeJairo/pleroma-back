@@ -1,7 +1,7 @@
 import express from 'express';
 import { AppDependencies } from 'types';
 import { createContractRouter, createBudgetInfoRouter, createAuthRouter } from '@routes/index';
-import { limiter, corsMiddleware } from '@middlewares/index';
+import { limiter, corsMiddleware, errorHandler } from '@middlewares/index';
 import cookieParser from 'cookie-parser';
 import { swaggerUi, swaggerSpec } from 'config/swagger';
 
@@ -16,6 +16,6 @@ export const createApp = ({ contractController, authController, authMiddleware, 
   app.use('/contract', createContractRouter({ contractController, authMiddleware }));
   app.use('/auth', createAuthRouter({ authController, authMiddleware }));
   app.use('/budget', createBudgetInfoRouter({ authMiddleware, budgetController }));
-
+  app.use(errorHandler);
   return app;
 };

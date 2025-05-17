@@ -40,7 +40,7 @@ const app = createApp({ contractController, authController, authMiddleware, budg
 
 app.listen(config.port, () => {
   console.clear();
-  console.log('\n🚀 Server is running!');
+  console.log(`\n🚀 Server is running! - ${config.nodeEnvironment}`);
   console.log(`👉 URL: http://localhost:${config.port}`);
   console.log(`📚 Swagger Docs: http://localhost:${config.port}/api-docs\n`);
 });
