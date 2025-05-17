@@ -3,6 +3,7 @@ import { AppDependencies } from 'types';
 import { createContractRouter, createBudgetInfoRouter, createAuthRouter } from '@routes/index';
 import { limiter } from '@middlewares/index';
 import cookieParser from 'cookie-parser';
+import { swaggerUi, swaggerSpec } from 'config/swagger';
 
 export const createApp = ({ contractController, authController, authMiddleware, budgetController }: AppDependencies) => {
   const app = express();
@@ -10,7 +11,7 @@ export const createApp = ({ contractController, authController, authMiddleware, 
   app.use(express.json());
   app.disable('x-powered-by');
   app.use(cookieParser());
-
+  app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
   app.use('/contract', createContractRouter({ contractController, authMiddleware }));
   app.use('/auth', createAuthRouter({ authController, authMiddleware }));
   app.use('/budget', createBudgetInfoRouter({ authMiddleware, budgetController }));

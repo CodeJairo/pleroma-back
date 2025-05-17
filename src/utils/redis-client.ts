@@ -11,7 +11,7 @@ redisClient.on('error', err => {
 
 (async () => {
   await redisClient.connect();
-  console.log('Connected to Redis');
+  console.log('✅ Redis connected successfully');
 })();
 
 /**

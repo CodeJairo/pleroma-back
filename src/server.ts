@@ -39,5 +39,8 @@ const authMiddleware: IAuthMiddleware = new AuthMiddleware({ authService });
 const app = createApp({ contractController, authController, authMiddleware, budgetController } as AppDependencies);
 
 app.listen(config.port, () => {
-  console.log(`Server is running on http://localhost:${config.port}`);
+  console.clear();
+  console.log('\n🚀 Server is running!');
+  console.log(`👉 URL: http://localhost:${config.port}`);
+  console.log(`📚 Swagger Docs: http://localhost:${config.port}/api-docs\n`);
 });

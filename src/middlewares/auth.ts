@@ -10,6 +10,7 @@ import {
   clearAuthCookie,
   generateRedisKey,
   setRedisCache,
+  ForbiddenError,
 } from '@utils/index';
 import { IAuthMiddleware, IAuthService } from 'types';
 
@@ -47,7 +48,7 @@ export class AuthMiddleware implements IAuthMiddleware {
 
     if (isAdminCheck) {
       const isAdmin = await this.#authService.isUserAdmin({ id: decoded.id });
-      if (!isAdmin) throw new UnauthorizedError('User is not admin');
+      if (!isAdmin) throw new ForbiddenError('User is not admin');
     }
 
     return decoded;
