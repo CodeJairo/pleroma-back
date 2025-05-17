@@ -2,7 +2,7 @@
 
 ### Descripción del Proyecto
 
-Pleroma es un software diseñado para la generación y gestión de contratos de manera eficiente. Actualmente, el proyecto se encuentra en proceso de construcción, por lo que algunas funcionalidades pueden estar incompletas o sujetas a cambios.
+Pleroma es un software diseñado para la generación y gestión de contratos, usuarios y presupuestos de manera eficiente. El proyecto está en desarrollo, por lo que algunas funcionalidades pueden estar incompletas o sujetas a cambios.
 
 ## Requisitos Previos
 
@@ -24,7 +24,7 @@ Pleroma es un software diseñado para la generación y gestión de contratos de 
    npm install
    ```
 
-3. Levanta los servicios con Docker:
+3. Levanta los servicios de base de datos y cache con Docker:
 
    ```bash
    docker-compose up -d
@@ -36,9 +36,11 @@ Pleroma es un software diseñado para la generación y gestión de contratos de 
    npx prisma migrate dev
    ```
 
+5. Crea un archivo `.env` basado en `.env.template` y configura las variables necesarias.
+
 ## Ejecutar el Proyecto
 
-### Modo Desarrollo:
+### Modo Desarrollo
 
 ```bash
 npm run dev
@@ -46,12 +48,17 @@ npm run dev
 
 El servidor estará disponible en `http://localhost:3000`.
 
-### Producción:
+### Producción
 
 ```bash
 npm run build
 npm start
 ```
+
+## Documentación de la API
+
+La documentación Swagger está disponible en:  
+[http://localhost:3000/api-docs](http://localhost:3000/api-docs)
 
 ## Notas
 
@@ -61,3 +68,6 @@ npm start
   ```bash
   docker-compose down
   ```
+
+- El proyecto implementa autenticación JWT, control de acceso por roles, validación de datos con Zod, y cache con Redis.
+- Para pruebas y desarrollo, revisa los archivos en la carpeta `src/__tests__/`.
