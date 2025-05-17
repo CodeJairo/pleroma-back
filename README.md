@@ -1,20 +1,5 @@
 # 💡 Pleroma Backend
 
-<table>
-<tr>
-<td>
-
-🔍 ¿Tienes preguntas sobre el proyecto? ¡Consulta o aporta en [DeepWiki](https://deepwiki.com/CodeJairo/pleroma-back)!
-
-</td>
-<td align="right">
-
-[![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/CodeJairo/pleroma-back)
-
-</td>
-</tr>
-</table>
-
 ---
 
 ## 📘 Descripción del Proyecto
