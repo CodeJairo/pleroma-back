@@ -7,6 +7,16 @@ import { swaggerUi, swaggerSpec } from 'config/swagger';
 
 export const createApp = ({ contractController, authController, authMiddleware, budgetController }: AppDependencies) => {
   const app = express();
+
+  app.use((req, res, next) => {
+    console.log(`Petición recibida: ${req.method}`);
+    // Cuando la respuesta termine, muestra el status
+    res.on('finish', () => {
+      console.log(`Status de la respuesta: ${res.statusCode}`);
+    });
+    next();
+  });
+
   app.use(corsMiddleware());
   app.use(limiter);
   app.use(express.json());
