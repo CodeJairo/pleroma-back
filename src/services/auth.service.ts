@@ -52,8 +52,8 @@ export class AuthService implements IAuthService {
       const isPasswordValid = await comparePasswords(data.password, user.password);
       if (!isPasswordValid) throw new UnauthorizedError('Invalid password');
 
-      const payload = { id: user.id, username: user.username };
-      const clientToken = generateToken(payload, '1h');
+      const payload = { id: user.id, username: user.username, role: user.role };
+      const clientToken = generateToken(payload, '15m');
       const serverToken = generateToken(payload, '1d');
 
       return { clientToken, serverToken };
@@ -67,7 +67,7 @@ export class AuthService implements IAuthService {
     try {
       if (!id || !username) throw new UnauthorizedError('User is not authenticated');
       const payload = { id, username };
-      return generateToken(payload, '1h');
+      return generateToken(payload, '15m');
     } catch (error) {
       if (error instanceof CustomError) throw error;
       throw new InternalServerError('Error refreshing token');
@@ -118,9 +118,11 @@ export class AuthService implements IAuthService {
 
   async logout(token: string) {
     try {
-      if (!token) throw new UnauthorizedError('User is not authenticated');
-      const blacklistedTokenKey = generateRedisKey('blacklist', token);
-      await setRedisCache(blacklistedTokenKey, true, 60 * 60 * 24); // 1 day
+      if (token) {
+        const blacklistedTokenKey = generateRedisKey('blacklist', token);
+        await setRedisCache(blacklistedTokenKey, true, 60 * 60 * 24); // 1 day
+      }
+      return;
     } catch (error) {
       if (error instanceof CustomError) throw error;
       throw new InternalServerError('Error logging out user');

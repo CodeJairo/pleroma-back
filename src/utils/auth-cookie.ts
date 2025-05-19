@@ -14,11 +14,21 @@ import config from '../config/config';
  * - `maxAge`: Cookie expires in 1 day.
  */
 export function setAuthCookie(res: Response, token: string): void {
-  res.cookie('auth_token', token, {
+  res.cookie(config.serverCookieKey, token, {
     httpOnly: true,
-    secure: config.nodeEnvironment === 'production',
-    sameSite: config.nodeEnvironment === 'production' ? 'strict' : 'none',
+    secure: config.nodeEnvironment === 'production' ? true : false,
+    sameSite: 'strict',
     maxAge: 1000 * 60 * 60 * 24, // 1 day
+  });
+  return;
+}
+
+export function setClientCookie(res: Response, token: string): void {
+  res.cookie(config.clientCookieKey, token, {
+    httpOnly: false,
+    secure: config.nodeEnvironment === 'production' ? true : false,
+    sameSite: 'strict',
+    maxAge: 1000 * 60 * 15, // 15 minutes
   });
   return;
 }

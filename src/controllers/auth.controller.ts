@@ -1,6 +1,7 @@
 import { Request, Response } from 'express';
 import { IAuthController, IAuthService } from 'types';
-import { handleError, InternalServerError, setAuthCookie } from '@utils/index';
+import { handleError, InternalServerError, setAuthCookie, setClientCookie } from '@utils/index';
+import config from 'config/config';
 
 export class AuthController implements IAuthController {
   #authService;
@@ -22,6 +23,7 @@ export class AuthController implements IAuthController {
     try {
       const token = await this.#authService.login({ data: req.body });
       setAuthCookie(res, token.serverToken);
+      setClientCookie(res, token.clientToken);
       return res.status(200).json({ clientToken: token.clientToken });
     } catch (error) {
       return handleError(error, res);
@@ -74,6 +76,7 @@ export class AuthController implements IAuthController {
   refreshToken = (req: Request, res: Response) => {
     try {
       const clientToken = this.#authService.refreshClientToken({ id: req.user?.id, username: req.user?.username });
+      setClientCookie(res, clientToken);
       return res.status(200).json({ clientToken });
     } catch (error) {
       return handleError(error, res);
@@ -82,8 +85,9 @@ export class AuthController implements IAuthController {
 
   logout = async (req: Request, res: Response) => {
     try {
-      await this.#authService.logout(req.cookies.auth_token);
-      res.clearCookie('auth_token');
+      await this.#authService.logout(req.cookies[config.serverCookieKey]);
+      res.clearCookie(config.serverCookieKey);
+      res.clearCookie(config.clientCookieKey);
       return res.status(200).json({ message: 'Logout successful' });
     } catch (error) {
       return handleError(error, res);

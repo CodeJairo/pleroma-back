@@ -12,6 +12,7 @@ import {
   ForbiddenError,
 } from '@utils/index';
 import { IAuthMiddleware, IAuthService } from 'types';
+import config from 'config/config';
 
 export class AuthMiddleware implements IAuthMiddleware {
   #authService;
@@ -57,7 +58,7 @@ export class AuthMiddleware implements IAuthMiddleware {
    */
   isAuthenticated = async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const token = req.cookies.auth_token;
+      const token = req.cookies[config.serverCookieKey];
       if (!token) throw new UnauthorizedError('User is not authenticated');
 
       const decoded = await this.#validateUserToken(token, res);
@@ -85,7 +86,7 @@ export class AuthMiddleware implements IAuthMiddleware {
    */
   isAdmin = async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const token = req.cookies.auth_token;
+      const token = req.cookies[config.serverCookieKey];
       if (!token) throw new UnauthorizedError('User is not authenticated');
 
       const decoded = await this.#validateUserToken(token, res, true);
