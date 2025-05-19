@@ -21,6 +21,8 @@ export class AuthController implements IAuthController {
 
   login = async (req: Request, res: Response) => {
     try {
+      res.clearCookie(config.serverCookieKey);
+      res.clearCookie(config.clientCookieKey);
       const token = await this.#authService.login({ data: req.body });
       setAuthCookie(res, token.serverToken);
       setClientCookie(res, token.clientToken);

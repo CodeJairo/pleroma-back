@@ -65,6 +65,8 @@ export class AuthService implements IAuthService {
 
   refreshClientToken({ id, username }: { id: string; username: string }) {
     try {
+      const isActiveUser = this.isUserActive({ id });
+      if (!isActiveUser) throw new UnauthorizedError('User is not active, please contact support');
       if (!id || !username) throw new UnauthorizedError('User is not authenticated');
       const payload = { id, username };
       return generateToken(payload, '15m');
