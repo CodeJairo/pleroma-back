@@ -96,7 +96,7 @@ const NaturalPersonSchema = z.object({
       required_error: 'El banco es obligatorio',
     })
     .min(3, { message: 'El banco debe tener al menos 3 caracteres' })
-    .max(20, { message: 'El banco debe tener como máximo 20 caracteres' }),
+    .max(50, { message: 'El banco debe tener como máximo 50 caracteres' }),
 
   accountType: z.enum(['AHORROS', 'CORRIENTE'], {
     invalid_type_error: 'El tipo de cuenta debe ser una cadena de texto',
