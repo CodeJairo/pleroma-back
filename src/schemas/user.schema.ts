@@ -5,30 +5,30 @@ const regex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[$@$!%*?&])([A-Za-z\d$@$!%*?&
 const userSchema = z.object({
   username: z
     .string({
-      required_error: 'Username is required',
-      invalid_type_error: 'Username must be a string',
+      required_error: 'El nombre de usuario es obligatorio',
+      invalid_type_error: 'El nombre de usuario debe ser una cadena de texto',
     })
-    .min(5, { message: 'Must be 5 or more characters long' })
-    .max(15, { message: 'Must be 15 or fewer characters long' }),
+    .min(5, { message: 'Debe tener al menos 5 caracteres' })
+    .max(15, { message: 'Debe tener como máximo 15 caracteres' }),
 
   email: z
     .string({
-      invalid_type_error: 'Email must be a string',
-      required_error: 'Email is required',
+      invalid_type_error: 'El correo electrónico debe ser una cadena de texto',
+      required_error: 'El correo electrónico es obligatorio',
     })
-    .email({ message: 'Invalid email format' }),
+    .email({ message: 'El formato del correo electrónico no es válido' }),
 
   password: z
-    .string({ required_error: 'Password is required' })
-    .min(8, { message: 'Password must be at least 8 characters long' })
-    .max(20, { message: 'Password must be at most 20 characters long' })
+    .string({ required_error: 'La contraseña es obligatoria' })
+    .min(8, { message: 'La contraseña debe tener al menos 8 caracteres' })
+    .max(20, { message: 'La contraseña debe tener como máximo 20 caracteres' })
     .regex(regex, {
-      message: 'Password must contain at least one uppercase letter, one lowercase letter, one number',
+      message: 'La contraseña debe contener al menos una mayúscula, una minúscula, un número y un carácter especial',
     }),
 
-  role: z.enum(['ADMIN', 'USER'], { invalid_type_error: 'Role must be either ADMIN or USER' }),
+  role: z.enum(['ADMIN', 'USER'], { invalid_type_error: 'El rol debe ser ADMIN o USER' }),
 
-  isActive: z.boolean({ invalid_type_error: 'isActive must be a boolean' }),
+  isActive: z.boolean({ invalid_type_error: 'isActive debe ser un valor booleano' }),
 });
 
 export function validateUser(data: unknown) {
@@ -39,15 +39,19 @@ export function validateLogin(data: unknown) {
   return userSchema.pick({ email: true, password: true }).strict().safeParse(data);
 }
 
+const updateUserSchema = z
+  .object({
+    email: userSchema.shape.email.optional(),
+    username: userSchema.shape.username.optional(),
+    password: userSchema.shape.password.optional(),
+  })
+  .strict()
+  .refine(obj => !!obj.email || !!obj.username || !!obj.password, {
+    message: 'Debe enviar al menos uno de: email, username o password.',
+  });
+
 export function validateUpdateUser(data: unknown) {
-  const schema = userSchema
-    .pick({ email: true, username: true, password: true })
-    .partial()
-    .strict()
-    .refine(obj => !!obj.email || !!obj.username || !!obj.password, {
-      message: 'At least one field must be provided',
-    });
-  return schema.safeParse(data);
+  return updateUserSchema.safeParse(data);
 }
 
 export function validateUpdateUserAsAdmin(data: unknown) {

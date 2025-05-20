@@ -1,134 +1,139 @@
 import z, { SafeParseReturnType } from 'zod';
 
 const JuridicalPersonSchema = z.object({
-  // Juridical Person information
+  // Información de la persona jurídica
 
   businessName: z
     .string({
-      invalid_type_error: 'Business name must be a string',
-      required_error: 'Business name is required',
+      invalid_type_error: 'El nombre de la empresa debe ser una cadena de texto',
+      required_error: 'El nombre de la empresa es obligatorio',
     })
-    .min(3, { message: 'Must be 3 or more characters long' })
-    .max(50, { message: 'Must be 50 or fewer characters long' }),
+    .min(3, { message: 'El nombre de la empresa debe tener al menos 3 caracteres' })
+    .max(50, { message: 'El nombre de la empresa debe tener como máximo 50 caracteres' }),
 
   businessDocumentNumber: z
     .string({
-      required_error: 'Business Document number is required',
+      required_error: 'El NIT de la empresa es obligatorio',
     })
     .min(5, {
-      message: 'Business Document number must be at least 5 characters long',
+      message: 'El NIT debe tener al menos 5 caracteres',
     })
-    .max(20, { message: 'Business Document number must be less than 20 characters long' })
+    .max(20, { message: 'El NIT debe tener como máximo 20 caracteres' })
     .regex(/^\d+$/, {
-      message: 'Business Document number must be a number',
+      message: 'El NIT debe ser un número',
     }),
 
-  // Legal representative information
+  // Información del representante legal
 
   name: z
     .string({
-      invalid_type_error: 'Name must be a string',
-      required_error: 'Name is required',
+      invalid_type_error: 'El nombre debe ser una cadena de texto',
+      required_error: 'El nombre es obligatorio',
     })
-    .min(3, { message: 'Must be 3 or more characters long' })
-    .max(50, { message: 'Must be 50 or fewer characters long' }),
+    .min(3, { message: 'El nombre debe tener al menos 3 caracteres' })
+    .max(50, { message: 'El nombre debe tener como máximo 50 caracteres' }),
 
   documentType: z.enum(['CC', 'CE', 'PAS'], {
-    invalid_type_error: 'Document type must be a string',
-    required_error: 'Document type is required',
-    message: 'Document type must be one of CC, CE, PAS',
+    invalid_type_error: 'El tipo de documento debe ser una cadena de texto',
+    required_error: 'El tipo de documento es obligatorio',
+    message: 'El tipo de documento debe ser CC, CE o PAS',
   }),
 
   documentNumber: z
     .string({
-      required_error: 'Document number is required',
+      required_error: 'El número de documento es obligatorio',
     })
     .min(5, {
-      message: 'Document number must be at least 5 characters long',
+      message: 'El número de documento debe tener al menos 5 caracteres',
     })
-    .max(20, { message: 'Document number must be less than 20 characters long' })
+    .max(20, { message: 'El número de documento debe tener como máximo 20 caracteres' })
     .regex(/^\d+$/, {
-      message: 'Document number must be a number',
+      message: 'El número de documento debe ser un número',
     }),
 
   expeditionAddress: z.string({
-    invalid_type_error: 'Expedition address must be a string',
-    required_error: 'Expedition address is required',
+    invalid_type_error: 'La dirección de expedición debe ser una cadena de texto',
+    required_error: 'La dirección de expedición es obligatoria',
   }),
 
-  birthDate: z.string({ required_error: 'Birth Date is required', invalid_type_error: 'Birth Date must be a string' }).date(),
+  birthDate: z
+    .string({
+      required_error: 'La fecha de nacimiento es obligatoria',
+      invalid_type_error: 'La fecha de nacimiento debe ser una cadena de texto',
+    })
+    .date(),
 
   genre: z.enum(['M', 'F'], {
-    invalid_type_error: 'Genre must be a string',
-    required_error: 'Genre is required',
+    invalid_type_error: 'El género debe ser una cadena de texto',
+    required_error: 'El género es obligatorio',
   }),
 
-  // Contact information
+  // Información de contacto
 
   address: z
     .string({
-      invalid_type_error: 'Address must be a string',
-      required_error: 'Address is required',
+      invalid_type_error: 'La dirección debe ser una cadena de texto',
+      required_error: 'La dirección es obligatoria',
     })
     .min(5, {
-      message: 'Address must be at least 5 characters long',
+      message: 'La dirección debe tener al menos 5 caracteres',
     })
     .max(50, {
-      message: 'Address must be less than 50 characters long',
+      message: 'La dirección debe tener como máximo 50 caracteres',
     }),
 
   phone: z
     .string({
-      required_error: 'Phone is required',
+      required_error: 'El teléfono es obligatorio',
     })
     .length(10, {
-      message: 'Phone must be 10 characters long',
+      message: 'El teléfono debe tener 10 dígitos',
     })
     .regex(/^\d+$/, {
-      message: 'Phone must be a number',
+      message: 'El teléfono debe ser un número',
     }),
 
   phone2: z
     .string()
     .length(10, {
-      message: 'Phone must be 10 characters long',
+      message: 'El teléfono alternativo debe tener 10 dígitos',
     })
     .regex(/^\d+$/, {
-      message: 'Phone must be a number',
+      message: 'El teléfono alternativo debe ser un número',
     })
     .optional(),
 
   email: z
     .string({
-      invalid_type_error: 'Email must be a string',
-      required_error: 'Email is required',
+      invalid_type_error: 'El correo electrónico debe ser una cadena de texto',
+      required_error: 'El correo electrónico es obligatorio',
     })
-    .email({ message: 'Invalid email address' }),
+    .email({ message: 'El correo electrónico no es válido' }),
 
-  // Bank information
+  // Información bancaria
 
   bank: z
     .string({
-      invalid_type_error: 'Bank must be a string',
-      required_error: 'Bank is required',
+      invalid_type_error: 'El banco debe ser una cadena de texto',
+      required_error: 'El banco es obligatorio',
     })
-    .min(3, { message: 'Must be 3 or more characters long' })
-    .max(20, { message: 'Must be 20 or fewer characters long' }),
+    .min(3, { message: 'El banco debe tener al menos 3 caracteres' })
+    .max(20, { message: 'El banco debe tener como máximo 20 caracteres' }),
 
   accountType: z.enum(['AHORROS', 'CORRIENTE'], {
-    invalid_type_error: 'Account type must be a string',
-    required_error: 'Account type is required',
+    invalid_type_error: 'El tipo de cuenta debe ser una cadena de texto',
+    required_error: 'El tipo de cuenta es obligatorio',
   }),
 
   bankAccountNumber: z
     .string({
-      invalid_type_error: 'Account number must be a string',
-      required_error: 'Account number is required',
+      invalid_type_error: 'El número de cuenta debe ser una cadena de texto',
+      required_error: 'El número de cuenta es obligatorio',
     })
-    .min(5, { message: 'Must be 5 or more characters long' })
-    .max(20, { message: 'Must be 20 or fewer characters long' })
+    .min(5, { message: 'El número de cuenta debe tener al menos 5 caracteres' })
+    .max(50, { message: 'El número de cuenta debe tener como máximo 50 caracteres' })
     .regex(/^\d+$/, {
-      message: 'Account number must be a number',
+      message: 'El número de cuenta debe ser un número',
     }),
 });
 

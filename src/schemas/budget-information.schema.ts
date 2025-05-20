@@ -3,42 +3,43 @@ import z, { SafeParseReturnType } from 'zod';
 // Esquema para la Información del Presupuesto
 const BudgetInformationSchema = z.object({
   certificateNumber: z.string({
-    required_error: 'Certificate number is required',
-    invalid_type_error: 'Certificate number must be a string',
+    required_error: 'El número de certificado es obligatorio',
+    invalid_type_error: 'El número de certificado debe ser una cadena de texto',
   }),
   issuanceDate: z
     .string({
-      required_error: 'Issuance date is required',
-      invalid_type_error: 'Issuance date must be a string',
+      required_error: 'La fecha de expedición es obligatoria',
+      invalid_type_error: 'La fecha de expedición debe ser una cadena de texto',
     })
     .date(),
 
   totalAssignedAmount: z
     .number({
-      required_error: 'Total assigned amount is required',
-      invalid_type_error: 'Total assigned amount must be a number',
+      required_error: 'El monto total asignado es obligatorio',
+      invalid_type_error: 'El monto total asignado debe ser un número',
     })
-    .positive({ message: 'Total assigned amount must be a positive number' }),
+    .positive({ message: 'El monto total asignado debe ser un número positivo' }),
 
   rubros: z
     .array(
       z.object({
         name: z.string({
-          required_error: 'Rubro name is required',
-          invalid_type_error: 'Rubro name must be a string',
+          required_error: 'El nombre del rubro es obligatorio',
+          invalid_type_error: 'El nombre del rubro debe ser una cadena de texto',
         }),
         code: z.string({
-          required_error: 'Rubro code is required',
-          invalid_type_error: 'Rubro code must be a string',
+          required_error: 'El código del rubro es obligatorio',
+          invalid_type_error: 'El código del rubro debe ser una cadena de texto',
         }),
         assignedAmount: z
           .number({
-            required_error: 'Assigned amount for rubro is required',
+            required_error: 'El monto asignado al rubro es obligatorio',
+            invalid_type_error: 'El monto asignado al rubro debe ser un número',
           })
-          .positive({ message: 'Assigned amount for rubro must be a positive number' }),
+          .positive({ message: 'El monto asignado al rubro debe ser un número positivo' }),
       })
     )
-    .nonempty({ message: 'Rubros array cannot be empty' }),
+    .nonempty({ message: 'El arreglo de rubros no puede estar vacío' }),
 });
 
 // Funciones de validación para la información presupuestaria
