@@ -6,9 +6,9 @@ export const limiter = rateLimit({
   store: new RedisStore({
     sendCommand: (...args: string[]) => redisClient.sendCommand(args),
   }),
-  windowMs: 15 * 60 * 1000, // 15 minutes
-  limit: 100, // Limit each IP to 100 requests per windowMs
-  standardHeaders: true, // Return rate limit info in the `RateLimit-*` headers
-  legacyHeaders: false, // Disable the `X-RateLimit-*` headers
-  message: 'Too many requests, please try again later.',
+  windowMs: 15 * 60 * 1000, // 15 minutos
+  limit: 1000, // Limita cada IP a 100 solicitudes por ventana de tiempo
+  standardHeaders: true, // Devuelve la información de rate limit en los headers `RateLimit-*`
+  legacyHeaders: false, // Desactiva los headers `X-RateLimit-*`
+  message: 'Has realizado demasiadas solicitudes. Por favor, intenta de nuevo más tarde.',
 });

@@ -8,8 +8,8 @@ export class AuthModel implements IAuthModel {
       const user = await prisma.user.create({ data: { ...data } });
       return user;
     } catch (error: any) {
-      if (error.code === 'P2002') throw new ConflictError(error.meta.target[0] + ' already exists');
-      throw new InternalServerError('Error registering user');
+      if (error.code === 'P2002') throw new ConflictError('Ya existe un usuario con ese correo electrónico o nombre de usuario.');
+      throw new InternalServerError('No se pudo registrar el usuario. Intenta nuevamente más tarde.');
     }
   }
 
@@ -20,9 +20,10 @@ export class AuthModel implements IAuthModel {
           email: email.toLowerCase(),
         },
       });
-      return user;
+      if (user) return user;
+      return null;
     } catch (error) {
-      throw new InternalServerError('Error getting user by email');
+      throw new InternalServerError('No se pudo consultar el usuario. Intenta nuevamente más tarde.');
     }
   }
 
@@ -35,7 +36,7 @@ export class AuthModel implements IAuthModel {
       });
       return user;
     } catch (error: any) {
-      throw new InternalServerError('Error getting user by ID');
+      throw new InternalServerError('No se pudo consultar el usuario. Intenta nuevamente más tarde.');
     }
   }
 
@@ -51,7 +52,7 @@ export class AuthModel implements IAuthModel {
       });
       return user;
     } catch (error) {
-      throw new InternalServerError('Error getting user by username');
+      throw new InternalServerError('No se pudo consultar el usuario. Intenta nuevamente más tarde.');
     }
   }
 
@@ -65,9 +66,9 @@ export class AuthModel implements IAuthModel {
       });
       return;
     } catch (error: any) {
-      if (error.code === 'P2025') throw new NotFoundError('User not found');
-      if (error.code === 'P2002') throw new ConflictError(error.meta.target[0] + ' already exists');
-      throw new InternalServerError('Error updating user');
+      if (error.code === 'P2025') throw new NotFoundError('No se encontró el usuario.');
+      if (error.code === 'P2002') throw new ConflictError('El correo electrónico o nombre de usuario ya están en uso.');
+      throw new InternalServerError('No se pudo actualizar el usuario. Intenta nuevamente más tarde.');
     }
   }
 
@@ -81,9 +82,9 @@ export class AuthModel implements IAuthModel {
       });
       return;
     } catch (error: any) {
-      if (error.code === 'P2023') throw new BadRequestError('Invalid id');
-      if (error.code === 'P2025') throw new NotFoundError('User not found');
-      throw new InternalServerError('Error activating user');
+      if (error.code === 'P2023') throw new BadRequestError('El identificador proporcionado no es válido.');
+      if (error.code === 'P2025') throw new NotFoundError('No se encontró el usuario.');
+      throw new InternalServerError('No se pudo actualizar el usuario. Intenta nuevamente más tarde.');
     }
   }
 }

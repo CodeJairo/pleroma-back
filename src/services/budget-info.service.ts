@@ -15,12 +15,12 @@ export class BudgetService implements IBudgetService {
     try {
       // Validar que el número de certificado sea válido (es un número)
       if (!data.certificateNumber || isNaN(Number(data.certificateNumber))) {
-        throw new ConflictError('Invalid certificate number');
+        throw new ConflictError('El número de certificado no es válido.');
       }
 
       // Validar que la fecha de emisión sea válida
       if (!data.issuanceDate || isNaN(new Date(data.issuanceDate).getTime())) {
-        throw new ConflictError('Invalid issuance date');
+        throw new ConflictError('La fecha de expedición no es válida.');
       }
 
       const certificateNumber = Number(data.certificateNumber);
@@ -28,7 +28,8 @@ export class BudgetService implements IBudgetService {
 
       // Verificar si ya existe un presupuesto con el mismo número de certificado
       const existingBudgetInfo = await this.#budgetModel.getBudgetInfo({ certificateNumber: data.certificateNumber, createdBy });
-      if (existingBudgetInfo) throw new ConflictError(`Certificate number ${data.certificateNumber} already exists`);
+      if (existingBudgetInfo)
+        throw new ConflictError(`Ya existe un presupuesto con el número de certificado ${data.certificateNumber}.`);
 
       // Obtener todos los presupuestos existentes y ordenarlos por número de certificado
       const allBudgetInfo = await this.#budgetModel.getAllBudgetInfo({ createdBy });
@@ -45,10 +46,8 @@ export class BudgetService implements IBudgetService {
       await this.#budgetModel.createBudgetInfo({ data, createdBy });
       return;
     } catch (error) {
-      // Si se lanza una CustomError, la volvemos a tirar
       if (error instanceof CustomError) throw error;
-      // Si hay un error inesperado, lanzamos un error genérico
-      throw new InternalServerError('Error creating budget info');
+      throw new InternalServerError('No se pudo crear el presupuesto. Intenta nuevamente más tarde.');
     }
   }
 
@@ -58,7 +57,6 @@ export class BudgetService implements IBudgetService {
    */
   async getBudgetInfo({ certificateNumber, createdBy }: { certificateNumber?: string; createdBy: string }) {
     try {
-      // Si se pasa un número de certificado, obtenemos ese presupuesto, de lo contrario, obtenemos todos los presupuestos
       const budgetInfo = certificateNumber
         ? await this.#budgetModel.getAllBudgetInfoByCertificateNumber({ certificateNumber, createdBy })
         : await this.#budgetModel.getAllBudgetInfo({ createdBy });
@@ -66,10 +64,8 @@ export class BudgetService implements IBudgetService {
       // Ordenar los presupuestos por número de certificado de manera ascendente
       return this.#sortBudgetsByCertificateNumber(budgetInfo);
     } catch (error) {
-      // Si se lanza una CustomError, la volvemos a tirar
       if (error instanceof CustomError) throw error;
-      // Si hay un error inesperado, lanzamos un error genérico
-      throw new InternalServerError('Error getting budget info');
+      throw new InternalServerError('No se pudo obtener la información de los presupuestos. Intenta nuevamente más tarde.');
     }
   }
 
@@ -95,15 +91,26 @@ export class BudgetService implements IBudgetService {
     // Validar que la fecha de emisión sea posterior o igual a la del presupuesto anterior
     if (previousBudget && issuanceDate < new Date(previousBudget.issuanceDate)) {
       throw new ConflictError(
-        `Issuance date for certificate number ${certificateNumber} must be after or equal to ${previousBudget.certificateNumber} (${previousBudget.issuanceDate})`
+        `La fecha de expedición para el certificado número ${certificateNumber} debe ser posterior o igual a la del certificado anterior ('${
+          previousBudget.certificateNumber
+        }': ${this.#formatDateOnly(previousBudget.issuanceDate)}).`
       );
     }
 
     // Validar que la fecha de emisión sea anterior o igual a la del presupuesto siguiente
     if (nextBudget && issuanceDate > new Date(nextBudget.issuanceDate)) {
       throw new ConflictError(
-        `Issuance date for certificate number ${certificateNumber} must be before or equal to ${nextBudget.certificateNumber} (${nextBudget.issuanceDate})`
+        `La fecha de expedición para el certificado número ${certificateNumber} debe ser anterior o igual a la del siguiente certificado ('${
+          nextBudget.certificateNumber
+        }': ${this.#formatDateOnly(nextBudget.issuanceDate)}).`
       );
     }
+  }
+
+  #formatDateOnly(date: string | Date): string {
+    // Si es string, pásalo a Date; si ya es Date, úsalo directo
+    const d = typeof date === 'string' ? new Date(date) : date;
+    // Formato YYYY-MM-DD
+    return d.toISOString().split('T')[0];
   }
 }

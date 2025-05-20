@@ -1,20 +1,20 @@
 import {
+  BadRequestError,
   ConflictError,
   CustomError,
+  ForbiddenError,
   InternalServerError,
-  hashPassword,
-  comparePasswords,
-  generateToken,
   NotFoundError,
   UnauthorizedError,
-  redisClient,
-  generateRedisKey,
-  setRedisCache,
+  comparePasswords,
   deleteRedisCache,
-  BadRequestError,
-  ForbiddenError,
+  generateRedisKey,
+  generateToken,
+  hashPassword,
+  redisClient,
+  setRedisCache,
 } from '@utils/index';
-import { IAuthModel, IAuthService, IUserRegister, IUserLogin } from 'types';
+import { IAuthModel, IAuthService, IUserLogin, IUserRegister } from 'types';
 
 export class AuthService implements IAuthService {
   #authModel;
@@ -26,9 +26,9 @@ export class AuthService implements IAuthService {
     try {
       let userExists;
       userExists = await this.#authModel.getUserByEmail({ email: data.email });
-      if (userExists) throw new ConflictError('Email already exists');
+      if (userExists) throw new ConflictError('Ya existe una cuenta con ese correo electrónico.');
       userExists = await this.#authModel.getUserByUsername({ username: data.username });
-      if (userExists) throw new ConflictError('Username already exists');
+      if (userExists) throw new ConflictError('El nombre de usuario ya está en uso.');
 
       const hashedPassword = await hashPassword(data.password);
       const userData = {
@@ -40,17 +40,17 @@ export class AuthService implements IAuthService {
       return;
     } catch (error) {
       if (error instanceof CustomError) throw error;
-      throw new InternalServerError('Error registering user');
+      throw new InternalServerError('No se pudo registrar el usuario. Intenta nuevamente más tarde.');
     }
   }
 
   async login({ data }: { data: IUserLogin }) {
     try {
       const user = await this.#authModel.getUserByEmail({ email: data.email });
-      if (!user) throw new NotFoundError('User not found');
-      if (!user.isActive) throw new UnauthorizedError('User is not active, please contact support');
+      if (!user) throw new NotFoundError('No existe una cuenta con ese correo electrónico.');
+      if (!user.isActive) throw new UnauthorizedError('Tu usuario está inactivo. Por favor contacta al soporte.');
       const isPasswordValid = await comparePasswords(data.password, user.password);
-      if (!isPasswordValid) throw new UnauthorizedError('Invalid password');
+      if (!isPasswordValid) throw new UnauthorizedError('La contraseña es incorrecta.');
 
       const payload = { id: user.id, username: user.username, role: user.role };
       const clientToken = generateToken(payload, '15m');
@@ -59,32 +59,32 @@ export class AuthService implements IAuthService {
       return { clientToken, serverToken };
     } catch (error) {
       if (error instanceof CustomError) throw error;
-      throw new InternalServerError('Error logging in user');
+      throw new InternalServerError('No se pudo iniciar sesión. Intenta nuevamente más tarde.');
     }
   }
 
   refreshClientToken({ id, username }: { id: string; username: string }) {
     try {
       const isActiveUser = this.isUserActive({ id });
-      if (!isActiveUser) throw new UnauthorizedError('User is not active, please contact support');
-      if (!id || !username) throw new UnauthorizedError('User is not authenticated');
+      if (!isActiveUser) throw new UnauthorizedError('Tu usuario está inactivo. Por favor contacta al soporte.');
+      if (!id || !username) throw new UnauthorizedError('No tienes una sesión activa.');
       const payload = { id, username };
       return generateToken(payload, '15m');
     } catch (error) {
       if (error instanceof CustomError) throw error;
-      throw new InternalServerError('Error refreshing token');
+      throw new InternalServerError('No se pudo renovar tu sesión. Intenta nuevamente más tarde.');
     }
   }
 
   async refreshServerToken(payload: { id: string; username: string }, token: string) {
     try {
       const blacklistedTokenKey = generateRedisKey('blacklist', token);
-      await setRedisCache(blacklistedTokenKey, true, 60 * 60 * 24); // 1 day
+      await setRedisCache(blacklistedTokenKey, true, 60 * 60 * 24); // 1 día
 
       return generateToken(payload, '1d');
     } catch (error) {
       if (error instanceof CustomError) throw error;
-      throw new InternalServerError('Error refreshing token');
+      throw new InternalServerError('No se pudo renovar tu sesión. Intenta nuevamente más tarde.');
     }
   }
 
@@ -100,7 +100,7 @@ export class AuthService implements IAuthService {
       return { clientToken, serverToken };
     } catch (error) {
       if (error instanceof CustomError) throw error;
-      throw new InternalServerError('Error updating user');
+      throw new InternalServerError('No se pudo actualizar el usuario. Intenta nuevamente más tarde.');
     }
   }
 
@@ -114,7 +114,7 @@ export class AuthService implements IAuthService {
       return;
     } catch (error) {
       if (error instanceof CustomError) throw error;
-      throw new InternalServerError('Error updating user');
+      throw new InternalServerError('No se pudo actualizar el usuario. Intenta nuevamente más tarde.');
     }
   }
 
@@ -122,28 +122,28 @@ export class AuthService implements IAuthService {
     try {
       if (token) {
         const blacklistedTokenKey = generateRedisKey('blacklist', token);
-        await setRedisCache(blacklistedTokenKey, true, 60 * 60 * 24); // 1 day
+        await setRedisCache(blacklistedTokenKey, true, 60 * 60 * 24); // 1 día
       }
       return;
     } catch (error) {
       if (error instanceof CustomError) throw error;
-      throw new InternalServerError('Error logging out user');
+      throw new InternalServerError('No se pudo cerrar la sesión. Intenta nuevamente más tarde.');
     }
   }
 
   async deleteUser({ id, adminId }: { id: string; adminId: string }) {
     try {
       const user = await this.#authModel.getUserById({ id });
-      if (!user) throw new NotFoundError('User not found');
-      if (user.id === adminId) throw new ForbiddenError('Cannot delete your own account');
-      if (user.role === 'ADMIN') throw new ForbiddenError('Cannot delete an admin user');
-      if (!user.isActive) throw new BadRequestError('User is already inactive');
+      if (!user) throw new NotFoundError('No se encontró el usuario.');
+      if (user.id === adminId) throw new ForbiddenError('No puedes eliminar tu propia cuenta.');
+      if (user.role === 'ADMIN') throw new ForbiddenError('No puedes eliminar un usuario administrador.');
+      if (!user.isActive) throw new BadRequestError('El usuario ya está inactivo.');
       await this.#authModel.updateUserAsAdmin({ id, data: { isActive: false } });
       const redisKey = generateRedisKey('user', id, 'isActive');
       await deleteRedisCache(redisKey);
     } catch (error) {
       if (error instanceof CustomError) throw error;
-      throw new InternalServerError('Error deleting user');
+      throw new InternalServerError('No se pudo eliminar el usuario. Intenta nuevamente más tarde.');
     }
   }
 
@@ -152,7 +152,7 @@ export class AuthService implements IAuthService {
       await this.#authModel.updateUserAsAdmin({ id, data: { isActive: true } });
     } catch (error) {
       if (error instanceof CustomError) throw error;
-      throw new InternalServerError('Error activating user');
+      throw new InternalServerError('No se pudo activar el usuario. Intenta nuevamente más tarde.');
     }
   }
 
@@ -165,14 +165,14 @@ export class AuthService implements IAuthService {
 
       if (cachedValue) return true;
       const user = await this.#authModel.getUserById({ id });
-      if (!user) throw new NotFoundError('User not found');
+      if (!user) throw new NotFoundError('No se encontró el usuario.');
       if (user.isActive) await setRedisCache(redisKey, true, 60 * 60 * 24);
       if (!user.isActive) await deleteRedisCache(redisKey);
 
       return user.isActive;
     } catch (error) {
       if (error instanceof CustomError) throw error;
-      throw new InternalServerError('Error checking user status');
+      throw new InternalServerError('No se pudo verificar el estado del usuario. Intenta nuevamente más tarde.');
     }
   }
 
@@ -184,7 +184,7 @@ export class AuthService implements IAuthService {
       if (cachedValue) return true;
 
       const user = await this.#authModel.getUserById({ id });
-      if (!user) throw new NotFoundError('User not found');
+      if (!user) throw new NotFoundError('No se encontró el usuario.');
 
       if (user.role === 'ADMIN') await setRedisCache(redisKey, true, 60 * 60 * 24);
       if (user.role !== 'ADMIN') await deleteRedisCache(redisKey);
@@ -192,7 +192,7 @@ export class AuthService implements IAuthService {
       return user.role === 'ADMIN';
     } catch (error) {
       if (error instanceof CustomError) throw error;
-      throw new InternalServerError('Error checking user status');
+      throw new InternalServerError('No se pudo verificar el estado del usuario. Intenta nuevamente más tarde.');
     }
   }
 
