@@ -1,6 +1,7 @@
 import { InternalServerError } from '@utils/index';
 import { IContractModel, IJuridicalPersonEntity, INaturalPersonEntity } from 'types';
 import prisma from './prisma';
+import { Genre } from 'types';
 
 export class ContractModel implements IContractModel {
   // =========================
@@ -12,7 +13,7 @@ export class ContractModel implements IContractModel {
    */
   async getAllNaturalPersonByDocumentNumber({ document, createdBy }: { document: string; createdBy: string }) {
     try {
-      return await prisma.naturalPerson.findMany({
+      const people = await prisma.naturalPerson.findMany({
         where: {
           documentNumber: {
             startsWith: document,
@@ -21,6 +22,11 @@ export class ContractModel implements IContractModel {
           createdBy,
         },
       });
+      return people.map(person => ({
+        ...person,
+        genre: person.genre as Genre,
+        phone2: person.phone2 === null ? undefined : person.phone2,
+      }));
     } catch (error) {
       throw new InternalServerError('No se pudo consultar la lista de personas naturales. Intenta nuevamente más tarde.');
     }
@@ -69,11 +75,16 @@ export class ContractModel implements IContractModel {
    */
   async getAllNaturalPerson(id: string) {
     try {
-      return prisma.naturalPerson.findMany({
+      const people = await prisma.naturalPerson.findMany({
         where: {
           createdBy: id,
         },
       });
+      return people.map(person => ({
+        ...person,
+        genre: person.genre as Genre,
+        phone2: person.phone2 === null ? undefined : person.phone2,
+      }));
     } catch (error) {
       throw new InternalServerError('No se pudo consultar la lista de personas naturales. Intenta nuevamente más tarde.');
     }
@@ -88,7 +99,7 @@ export class ContractModel implements IContractModel {
    */
   async getAllJuridicalPersonByDocumentNumber({ document, createdBy }: { document: string; createdBy: string }) {
     try {
-      return await prisma.juridicalPerson.findMany({
+      const juridicalPeople = await prisma.juridicalPerson.findMany({
         where: {
           businessDocumentNumber: {
             startsWith: document,
@@ -97,6 +108,11 @@ export class ContractModel implements IContractModel {
           createdBy,
         },
       });
+      return juridicalPeople.map(juridicalPerson => ({
+        ...juridicalPerson,
+        genre: juridicalPerson.genre as Genre,
+        phone2: juridicalPerson.phone2 === null ? undefined : juridicalPerson.phone2,
+      }));
     } catch (error) {
       throw new InternalServerError('No se pudo consultar la lista de personas jurídicas. Intenta nuevamente más tarde.');
     }
@@ -132,8 +148,13 @@ export class ContractModel implements IContractModel {
           createdBy,
         },
       });
-      if (juridicalPerson) return juridicalPerson;
-      return null;
+      if (!juridicalPerson) return null;
+
+      // Conversión explícita
+      return {
+        ...juridicalPerson,
+        genre: juridicalPerson.genre as Genre,
+      };
     } catch (error) {
       console.log(error);
       throw new InternalServerError('No se pudo consultar la persona jurídica. Intenta nuevamente más tarde.');
@@ -143,13 +164,18 @@ export class ContractModel implements IContractModel {
   /**
    * Obtiene todas las personas jurídicas creadas por un usuario.
    */
-  getAllJuridicalPerson(id: string) {
+  async getAllJuridicalPerson(id: string) {
     try {
-      return prisma.juridicalPerson.findMany({
+      const juridicalPeople = await prisma.juridicalPerson.findMany({
         where: {
           createdBy: id,
         },
       });
+      return juridicalPeople.map(juridicalPerson => ({
+        ...juridicalPerson,
+        genre: juridicalPerson.genre as Genre,
+        phone2: juridicalPerson.phone2 === null ? undefined : juridicalPerson.phone2,
+      }));
     } catch (error) {
       throw new InternalServerError('No se pudo consultar la lista de personas jurídicas. Intenta nuevamente más tarde.');
     }

@@ -1,5 +1,13 @@
 import { ConflictError, CustomError, generateRedisKey, InternalServerError, redisClient, setRedisCache } from '@utils/index';
-import { IContractModel, IContractService, IJuridicalPersonEntity, INaturalPersonEntity } from 'types';
+import {
+  IContractModel,
+  IContractorEntity,
+  IContractService,
+  IJuridicalPersonEntity,
+  IJuridicalPersonResponse,
+  INaturalPersonEntity,
+  INaturalPersonResponse,
+} from 'types';
 
 export class ContractService implements IContractService {
   #contractModel;
@@ -11,9 +19,6 @@ export class ContractService implements IContractService {
   // SECCIÓN: PERSONA NATURAL
   // =========================
 
-  /**
-   * Crea una persona natural.
-   */
   async createNaturalPerson({ data, createdBy }: { data: INaturalPersonEntity; createdBy: string }) {
     try {
       const existNaturalPerson = await this.#contractModel.getNaturalPerson({
@@ -23,7 +28,9 @@ export class ContractService implements IContractService {
       if (existNaturalPerson) throw new ConflictError('Ya existe una persona natural con ese número de documento.');
       await this.#contractModel.createNaturalPerson({ data, createdBy });
       const redisKey = generateRedisKey('naturalPersonArray', createdBy);
+      const contractorsKey = generateRedisKey('contractorsArray', createdBy);
       await redisClient.del(redisKey);
+      await redisClient.del(contractorsKey); // Invalida el cache de contratistas
       return;
     } catch (error) {
       if (error instanceof CustomError) throw error;
@@ -31,14 +38,11 @@ export class ContractService implements IContractService {
     }
   }
 
-  /**
-   * Obtiene todas las personas naturales creadas por un usuario.
-   */
-  async getAllNaturalPerson(id: string): Promise<any[]> {
+  async getAllNaturalPerson(id: string) {
     try {
       const redisKey = generateRedisKey('naturalPersonArray', id);
       const redisData = await redisClient.get(redisKey);
-      if (redisData) return JSON.parse(redisData);
+      if (redisData) return JSON.parse(redisData) as INaturalPersonResponse[];
       const naturalPersonArray = await this.#contractModel.getAllNaturalPerson(id);
       await setRedisCache(redisKey, naturalPersonArray, 60 * 60 * 24);
       return naturalPersonArray;
@@ -48,10 +52,7 @@ export class ContractService implements IContractService {
     }
   }
 
-  /**
-   * Obtiene todas las personas naturales por número de documento y usuario creador.
-   */
-  async getAllNaturalPersonByDocumentNumber({ document, createdBy }: { document: string; createdBy: string }): Promise<any[]> {
+  async getAllNaturalPersonByDocumentNumber({ document, createdBy }: { document: string; createdBy: string }) {
     try {
       const naturalPersonArray = await this.#contractModel.getAllNaturalPersonByDocumentNumber({
         document,
@@ -68,9 +69,6 @@ export class ContractService implements IContractService {
   // SECCIÓN: PERSONA JURÍDICA
   // ============================
 
-  /**
-   * Crea una persona jurídica.
-   */
   async createJuridicalPerson({ data, createdBy }: { data: IJuridicalPersonEntity; createdBy: string }): Promise<void> {
     try {
       const existJuridicalPerson = await this.#contractModel.getJuridicalPerson({
@@ -80,7 +78,9 @@ export class ContractService implements IContractService {
       if (existJuridicalPerson) throw new ConflictError('Ya existe una persona jurídica con ese NIT.');
       await this.#contractModel.createJuridicalPerson({ data, createdBy });
       const redisKey = generateRedisKey('juridicalPersonArray', createdBy);
+      const contractorsKey = generateRedisKey('contractorsArray', createdBy);
       await redisClient.del(redisKey);
+      await redisClient.del(contractorsKey); // Invalida el cache de contratistas
       return;
     } catch (error) {
       if (error instanceof CustomError) throw error;
@@ -88,14 +88,11 @@ export class ContractService implements IContractService {
     }
   }
 
-  /**
-   * Obtiene todas las personas jurídicas creadas por un usuario.
-   */
-  async getAllJuridicalPerson(id: string): Promise<any[]> {
+  async getAllJuridicalPerson(id: string) {
     try {
       const redisKey = generateRedisKey('juridicalPersonArray', id);
       const redisData = await redisClient.get(redisKey);
-      if (redisData) return JSON.parse(redisData);
+      if (redisData) return JSON.parse(redisData) as IJuridicalPersonResponse[];
       const juridicalPersonArray = await this.#contractModel.getAllJuridicalPerson(id);
       await setRedisCache(redisKey, juridicalPersonArray, 60 * 60 * 24);
       return juridicalPersonArray;
@@ -105,10 +102,7 @@ export class ContractService implements IContractService {
     }
   }
 
-  /**
-   * Obtiene todas las personas jurídicas por número de documento y usuario creador.
-   */
-  async getAllJuridicalPersonByDocumentNumber({ document, createdBy }: { document: string; createdBy: string }): Promise<any[]> {
+  async getAllJuridicalPersonByDocumentNumber({ document, createdBy }: { document: string; createdBy: string }) {
     try {
       const juridicalPersonArray = await this.#contractModel.getAllJuridicalPersonByDocumentNumber({
         document,
@@ -125,14 +119,36 @@ export class ContractService implements IContractService {
   // SECCIÓN: GENERAL
   // =========================
 
-  /**
-   * Obtiene todas las personas (jurídicas y naturales) creadas por un usuario.
-   */
-  async getAllContractors(id: string): Promise<any[]> {
+  async getAllContractors(id: string) {
     try {
+      const contractorsKey = generateRedisKey('contractorsArray', id);
+      const redisData = await redisClient.get(contractorsKey);
+      if (redisData) return JSON.parse(redisData) as IContractorEntity[];
+
       const juridicalPersons = await this.getAllJuridicalPerson(id);
       const naturalPersons = await this.getAllNaturalPerson(id);
-      return [...juridicalPersons, ...naturalPersons];
+
+      const contractors: IContractorEntity[] = [
+        ...juridicalPersons.map((j: IJuridicalPersonResponse) => ({
+          id: j.id,
+          contractor: j.name,
+          contractorDocument: j.documentNumber,
+          expeditionAddress: j.expeditionAddress,
+          birthDate: j.birthDate,
+          genre: j.genre,
+        })),
+        ...naturalPersons.map((n: INaturalPersonResponse) => ({
+          id: n.id,
+          contractor: n.name,
+          contractorDocument: n.documentNumber,
+          expeditionAddress: n.expeditionAddress,
+          birthDate: n.birthDate,
+          genre: n.genre,
+        })),
+      ];
+
+      await setRedisCache(contractorsKey, contractors, 60 * 60 * 24);
+      return contractors;
     } catch (error) {
       if (error instanceof CustomError) throw error;
       throw new InternalServerError('No se pudo consultar la lista de contratistas. Intenta nuevamente más tarde.');

@@ -24,7 +24,7 @@ interface RequestPayload {
 
 type UserRole = 'USER' | 'ADMIN';
 type DocumentType = 'CC' | 'CE' | 'PAS';
-type Genre = 'M' | 'F';
+export type Genre = 'M' | 'F';
 type BankAccountType = 'AHORRO' | 'CORRIENTE';
 
 // ---------------------------------------------
@@ -42,7 +42,7 @@ export interface IJuridicalPersonEntity {
   genre: Genre;
   address: string;
   phone: string;
-  phone2: string;
+  phone2?: string | null;
   email: string;
   bank: string;
   bankAccountNumber: string;
@@ -59,12 +59,21 @@ export interface INaturalPersonEntity {
   genre: Genre;
   address: string;
   phone: string;
-  phone2: string;
+  phone2?: string | null;
   email: string;
   bank: string;
   bankAccountNumber: string;
   accountType: BankAccountType;
   createdBy: string;
+}
+
+export interface IContractorEntity {
+  id: string;
+  contractor: string;
+  contractorDocument: string;
+  expeditionAddress: string;
+  birthDate: Date;
+  genre: Genre;
 }
 
 export interface IBudgetInfoEntity {
@@ -100,6 +109,53 @@ export interface IUserRegister {
 export interface IUserLogin {
   email: string;
   password: string;
+}
+
+// ---------------------------------------------
+// Interfaces de Respuesta
+// ---------------------------------------------
+
+export interface IJuridicalPersonResponse {
+  id: string;
+  businessName: string;
+  businessDocumentType: string;
+  businessDocumentNumber: string;
+  name: string;
+  documentType: string;
+  documentNumber: string;
+  expeditionAddress: string;
+  birthDate: Date;
+  genre: Genre;
+  address: string;
+  phone: string;
+  phone2?: string | null;
+  email: string;
+  bank: string;
+  accountType: string;
+  bankAccountNumber: string;
+  createdBy: string;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+export interface INaturalPersonResponse {
+  id: string;
+  name: string;
+  documentType: string;
+  documentNumber: string;
+  expeditionAddress: string;
+  birthDate: Date;
+  genre: Genre;
+  address: string;
+  phone: string;
+  phone2?: string | null;
+  email: string;
+  bank: string;
+  accountType: string;
+  bankAccountNumber: string;
+  createdBy: string;
+  createdAt: Date;
+  updatedAt: Date;
 }
 
 // ---------------------------------------------
@@ -154,18 +210,30 @@ export interface IContractModel {
   // =========================
 
   createNaturalPerson({ data, createdBy }: { data: INaturalPersonEntity; createdBy: string }): Promise<void>;
-  getNaturalPerson({ document, createdBy }: { document: string; createdBy: string }): Promise<any>;
-  getAllNaturalPerson(id: string): Promise<any[]>;
-  getAllNaturalPersonByDocumentNumber({ document, createdBy }: { document: string; createdBy: string }): Promise<any>;
+  getNaturalPerson({ document, createdBy }: { document: string; createdBy: string }): Promise<INaturalPersonResponse | null>;
+  getAllNaturalPerson(id: string): Promise<INaturalPersonResponse[]>;
+  getAllNaturalPersonByDocumentNumber({
+    document,
+    createdBy,
+  }: {
+    document: string;
+    createdBy: string;
+  }): Promise<INaturalPersonResponse[]>;
 
   // ============================
   // SECCIÓN: PERSONA JURÍDICA
   // ============================
 
   createJuridicalPerson({ data, createdBy }: { data: IJuridicalPersonEntity; createdBy: string }): Promise<void>;
-  getJuridicalPerson({ document, createdBy }: { document: string; createdBy: string }): Promise<any>;
-  getAllJuridicalPerson(id: string): Promise<any[]>;
-  getAllJuridicalPersonByDocumentNumber({ document, createdBy }: { document: string; createdBy: string }): Promise<any>;
+  getJuridicalPerson({ document, createdBy }: { document: string; createdBy: string }): Promise<IJuridicalPersonResponse | null>;
+  getAllJuridicalPerson(id: string): Promise<IJuridicalPersonResponse[]>;
+  getAllJuridicalPersonByDocumentNumber({
+    document,
+    createdBy,
+  }: {
+    document: string;
+    createdBy: string;
+  }): Promise<IJuridicalPersonResponse[]>;
 }
 
 export interface IAuthModel {
@@ -200,22 +268,34 @@ export interface IContractService {
   // =========================
 
   createNaturalPerson({ data, createdBy }: { data: INaturalPersonEntity; createdBy: string }): Promise<void>;
-  getAllNaturalPerson(id: string): Promise<any[]>;
-  getAllNaturalPersonByDocumentNumber({ document, createdBy }: { document: string; createdBy: string }): Promise<any>;
+  getAllNaturalPerson(id: string): Promise<INaturalPersonResponse[]>;
+  getAllNaturalPersonByDocumentNumber({
+    document,
+    createdBy,
+  }: {
+    document: string;
+    createdBy: string;
+  }): Promise<INaturalPersonResponse[]>;
 
   // ============================
   // SECCIÓN: PERSONA JURÍDICA
   // ============================
 
   createJuridicalPerson({ data, createdBy }: { data: IJuridicalPersonEntity; createdBy: string }): Promise<void>;
-  getAllJuridicalPerson(id: string): Promise<any[]>;
-  getAllJuridicalPersonByDocumentNumber({ document, createdBy }: { document: string; createdBy: string }): Promise<any>;
+  getAllJuridicalPerson(id: string): Promise<IJuridicalPersonResponse[]>;
+  getAllJuridicalPersonByDocumentNumber({
+    document,
+    createdBy,
+  }: {
+    document: string;
+    createdBy: string;
+  }): Promise<IJuridicalPersonResponse[]>;
 
   // =========================
   // SECCIÓN: GENERAL
   // =========================
 
-  getAllContractors(id: string): Promise<any[]>;
+  getAllContractors(id: string): Promise<IContractorEntity[]>;
 }
 
 export interface IAuthService {
