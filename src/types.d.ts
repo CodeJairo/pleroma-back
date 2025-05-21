@@ -2,7 +2,7 @@
 // Extensiones de Tipos Globales
 // ---------------------------------------------
 
-import { Request, Response } from 'express';
+import { Request, Response, NextFunction } from 'express';
 
 declare global {
   namespace Express {
@@ -21,6 +21,7 @@ interface RequestPayload {
 // ---------------------------------------------
 // Tipos Generales y Utilitarios
 // ---------------------------------------------
+
 type UserRole = 'USER' | 'ADMIN';
 type DocumentType = 'CC' | 'CE' | 'PAS';
 type Genre = 'M' | 'F';
@@ -106,19 +107,25 @@ export interface IUserLogin {
 // ---------------------------------------------
 
 export interface IContractController {
-  // Juridical Person
-  getAllJuridicalPerson(req: Request, res: Response): Promise<any>;
+  // =========================
+  // SECCIÓN: PERSONA NATURAL
+  // =========================
+
+  createNaturalPerson(req: Request, res: Response): Promise<any>;
+  getAllNaturalPerson(req: Request, res: Response): Promise<any>;
+
+  // ============================
+  // SECCIÓN: PERSONA JURÍDICA
+  // ============================
+
   createJuridicalPerson(req: Request, res: Response): Promise<any>;
+  getAllJuridicalPerson(req: Request, res: Response): Promise<any>;
 
-  // updateJuridicalPerson(req: Request, res: Response): Promise<any>;
-  // deleteJuridicalPerson(req: Request, res: Response): Promise<any>;
+  // =========================
+  // SECCIÓN: GENERAL
+  // =========================
 
-  // Natural Person
-  // getAllNaturalPerson(req: Request, res: Response): Promise<any>;
-  // getNaturalPerson(req: Request, res: Response): Promise<any>;
-  // createNaturalPerson(req: Request, res: Response): Promise<any>;
-  // updateNaturalPerson(req: Request, res: Response): Promise<any>;
-  // deleteNaturalPerson(req: Request, res: Response): Promise<any>;
+  getAllContractors(req: Request, res: Response): Promise<any>;
 }
 
 export interface IAuthController {
@@ -130,11 +137,6 @@ export interface IAuthController {
   updateUserAsAdmin(req: Request, res: Response): Promise<any>;
   deleteUser(req: Request, res: Response): Promise<any>;
   activateUser(req: Request, res: Response): Promise<any>;
-
-  // forgotPassword(req: Request, res: Response): Promise<any>;
-  // resetPassword(req: Request, res: Response): Promise<any>;
-  // verifyEmail(req: Request, res: Response): Promise<any>;
-  // getUserProfile(req: Request, res: Response): Promise<any>;
 }
 
 export interface IBudgetController {
@@ -147,13 +149,23 @@ export interface IBudgetController {
 // ---------------------------------------------
 
 export interface IContractModel {
+  // =========================
+  // SECCIÓN: PERSONA NATURAL
+  // =========================
+
+  createNaturalPerson({ data, createdBy }: { data: INaturalPersonEntity; createdBy: string }): Promise<void>;
+  getNaturalPerson({ document, createdBy }: { document: string; createdBy: string }): Promise<any>;
+  getAllNaturalPerson(id: string): Promise<any[]>;
+  getAllNaturalPersonByDocumentNumber({ document, createdBy }: { document: string; createdBy: string }): Promise<any>;
+
+  // ============================
+  // SECCIÓN: PERSONA JURÍDICA
+  // ============================
+
   createJuridicalPerson({ data, createdBy }: { data: IJuridicalPersonEntity; createdBy: string }): Promise<void>;
-  getAllJuridicalPersonByDocumentNumber({ document, createdBy }: { document: string; createdBy: string }): Promise<any>;
-  getAllJuridicalPerson(id): Promise<any[]>;
   getJuridicalPerson({ document, createdBy }: { document: string; createdBy: string }): Promise<any>;
-  // getJuridicalPersonById({ id }: { id: string }): Promise<any>;
-  // updateJuridicalPerson({ id, data }: { id: string; data: IJuridicalPerson }): Promise<void>;
-  // deleteJuridicalPerson({ id }: { id: string }): Promise<void>;
+  getAllJuridicalPerson(id: string): Promise<any[]>;
+  getAllJuridicalPersonByDocumentNumber({ document, createdBy }: { document: string; createdBy: string }): Promise<any>;
 }
 
 export interface IAuthModel {
@@ -183,11 +195,27 @@ export interface IBudgetModel {
 // ---------------------------------------------
 
 export interface IContractService {
+  // =========================
+  // SECCIÓN: PERSONA NATURAL
+  // =========================
+
+  createNaturalPerson({ data, createdBy }: { data: INaturalPersonEntity; createdBy: string }): Promise<void>;
+  getAllNaturalPerson(id: string): Promise<any[]>;
+  getAllNaturalPersonByDocumentNumber({ document, createdBy }: { document: string; createdBy: string }): Promise<any>;
+
+  // ============================
+  // SECCIÓN: PERSONA JURÍDICA
+  // ============================
+
   createJuridicalPerson({ data, createdBy }: { data: IJuridicalPersonEntity; createdBy: string }): Promise<void>;
-
-  getAllJuridicalPerson(id): Promise<any[]>;
-
+  getAllJuridicalPerson(id: string): Promise<any[]>;
   getAllJuridicalPersonByDocumentNumber({ document, createdBy }: { document: string; createdBy: string }): Promise<any>;
+
+  // =========================
+  // SECCIÓN: GENERAL
+  // =========================
+
+  getAllContractors(id: string): Promise<any[]>;
 }
 
 export interface IAuthService {
@@ -212,14 +240,6 @@ export interface IAuthService {
   updateUserAsAdmin({ id, data }: { id: string; data: Partial<IUserEntity> }): Promise<void>;
   deleteUser({ id, adminId }: { id: string; adminId: string }): Promise<void>;
   activateUser({ id }: { id: string }): Promise<void>;
-  // refreshToken({ token }: { token: string }): Promise<{ accessToken: string; refreshToken: string }>;
-  // refreshToken(req: Request, res: Response): Promise<any>;
-  // forgotPassword(req: Request, res: Response): Promise<any>;
-  // resetPassword(req: Request, res: Response): Promise<any>;
-  // verifyEmail(req: Request, res: Response): Promise<any>;
-  // getUserProfile(req: Request, res: Response): Promise<any>;
-  // updateUserProfile(req: Request, res: Response): Promise<any>;
-  // deleteUserProfile(req: Request, res: Response): Promise<any>;
 }
 
 export interface IBudgetService {
@@ -245,6 +265,4 @@ export interface AppDependencies {
 export interface IAuthMiddleware {
   isAuthenticated(req: Request, res: Response, next: NextFunction): Promise<any>;
   isAdmin(req: Request, res: Response, next: NextFunction): Promise<any>;
-  // isUserActive(req: Request, res: Response, next: NextFunction): Promise<any>;
-  // isUser(req: Request, res: Response, next: NextFunction): Promise<any>;
 }

@@ -8,27 +8,74 @@ export class ContractController implements IContractController {
     this.#contractService = contractService;
   }
 
-  createJuridicalPerson = async (req: Request, res: Response): Promise<any> => {
+  // =========================
+  // SECCIÓN: PERSONA NATURAL
+  // =========================
+
+  /**
+   * Crea una persona natural.
+   */
+  createNaturalPerson = async (req: Request, res: Response) => {
     try {
-      await this.#contractService.createJuridicalPerson({ data: req.body, createdBy: req.user!.id });
-      return res.status(200).json({ message: 'Juridical person created successfully' });
+      await this.#contractService.createNaturalPerson({ data: req.body, createdBy: req.user!.id });
+      return res.status(200).json({ message: 'Persona natural creada exitosamente.' });
     } catch (error) {
       return handleError(error, res);
     }
   };
 
-  getAllJuridicalPerson = async (req: Request, res: Response): Promise<any> => {
+  /**
+   * Obtiene todas las personas naturales creadas por un usuario o por número de documento.
+   */
+  getAllNaturalPerson = async (req: Request, res: Response) => {
     try {
       const { document } = req.query;
+      let naturalPersonArray;
 
+      if (document && typeof document === 'string') {
+        naturalPersonArray = await this.#contractService.getAllNaturalPersonByDocumentNumber({
+          document,
+          createdBy: req.user!.id,
+        });
+        return res.status(200).send(naturalPersonArray);
+      }
+
+      naturalPersonArray = await this.#contractService.getAllNaturalPerson(req.user!.id);
+      return res.status(200).send(naturalPersonArray);
+    } catch (error) {
+      return handleError(error, res);
+    }
+  };
+
+  // ============================
+  // SECCIÓN: PERSONA JURÍDICA
+  // ============================
+
+  /**
+   * Crea una persona jurídica.
+   */
+  createJuridicalPerson = async (req: Request, res: Response) => {
+    try {
+      await this.#contractService.createJuridicalPerson({ data: req.body, createdBy: req.user!.id });
+      return res.status(200).json({ message: 'Persona jurídica creada exitosamente.' });
+    } catch (error) {
+      return handleError(error, res);
+    }
+  };
+
+  /**
+   * Obtiene todas las personas jurídicas creadas por un usuario o por número de documento.
+   */
+  getAllJuridicalPerson = async (req: Request, res: Response) => {
+    try {
+      const { document } = req.query;
       let juridicalPersonArray;
 
       if (document && typeof document === 'string') {
         juridicalPersonArray = await this.#contractService.getAllJuridicalPersonByDocumentNumber({
-          document: document,
+          document,
           createdBy: req.user!.id,
         });
-
         return res.status(200).send(juridicalPersonArray);
       }
 
@@ -39,25 +86,19 @@ export class ContractController implements IContractController {
     }
   };
 
-  // updateJuridicalPerson(req: Request, res: Response): Promise<any> {
-  //   throw new Error('Method not implemented.');
-  // }
-  // deleteJuridicalPerson(req: Request, res: Response): Promise<any> {
-  //   throw new Error('Method not implemented.');
-  // }
-  // getAllNaturalPerson(req: Request, res: Response): Promise<any> {
-  //   throw new Error('Method not implemented.');
-  // }
-  // getNaturalPerson(req: Request, res: Response): Promise<any> {
-  //   throw new Error('Method not implemented.');
-  // }
-  // createNaturalPerson(req: Request, res: Response): Promise<any> {
-  //   throw new Error('Method not implemented.');
-  // }
-  // updateNaturalPerson(req: Request, res: Response): Promise<any> {
-  //   throw new Error('Method not implemented.');
-  // }
-  // deleteNaturalPerson(req: Request, res: Response): Promise<any> {
-  //   throw new Error('Method not implemented.');
-  // }
+  // =========================
+  // SECCIÓN: GENERAL
+  // =========================
+
+  /**
+   * Obtiene todas las personas (jurídicas y naturales) creadas por un usuario.
+   */
+  getAllContractors = async (req: Request, res: Response) => {
+    try {
+      const contractorsArray = await this.#contractService.getAllContractors(req.user!.id);
+      return res.status(200).send(contractorsArray);
+    } catch (error) {
+      return handleError(error, res);
+    }
+  };
 }
