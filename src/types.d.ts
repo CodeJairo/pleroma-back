@@ -45,6 +45,7 @@ export interface IJuridicalPersonEntity {
   phone2?: string | null;
   email: string;
   bank: string;
+  anotherBank?: string;
   bankAccountNumber: string;
   accountType: BankAccountType;
   createdBy: string;
@@ -62,6 +63,7 @@ export interface INaturalPersonEntity {
   phone2?: string | null;
   email: string;
   bank: string;
+  anotherBank?: string;
   bankAccountNumber: string;
   accountType: BankAccountType;
   createdBy: string;

@@ -120,6 +120,14 @@ const JuridicalPersonSchema = z.object({
     .min(3, { message: 'El banco debe tener al menos 3 caracteres' })
     .max(50, { message: 'El banco debe tener como máximo 50 caracteres' }),
 
+  anotherBank: z
+    .string({
+      invalid_type_error: 'El banco alternativo debe ser una cadena de texto',
+    })
+    .min(3, { message: 'El banco alternativo debe tener al menos 3 caracteres' })
+    .max(50, { message: 'El banco alternativo debe tener como máximo 50 caracteres' })
+    .optional(),
+
   accountType: z.enum(['AHORROS', 'CORRIENTE'], {
     invalid_type_error: 'El tipo de cuenta debe ser una cadena de texto',
     required_error: 'El tipo de cuenta es obligatorio',

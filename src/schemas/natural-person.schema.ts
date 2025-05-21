@@ -103,6 +103,14 @@ const NaturalPersonSchema = z.object({
     required_error: 'El tipo de cuenta es obligatorio',
   }),
 
+  anotherBank: z
+    .string({
+      invalid_type_error: 'El banco alternativo debe ser una cadena de texto',
+    })
+    .min(3, { message: 'El banco alternativo debe tener al menos 3 caracteres' })
+    .max(50, { message: 'El banco alternativo debe tener como máximo 50 caracteres' })
+    .optional(),
+
   bankAccountNumber: z
     .string({
       invalid_type_error: 'El número de cuenta debe ser una cadena de texto',

@@ -21,12 +21,16 @@ export class ContractService implements IContractService {
 
   async createNaturalPerson({ data, createdBy }: { data: INaturalPersonEntity; createdBy: string }) {
     try {
+      let bank = data.bank;
+      if (data.bank === 'null' && data.anotherBank) bank = data.anotherBank;
+      const { anotherBank, ...dataWithoutAnotherBank } = { ...data, bank };
+
       const existNaturalPerson = await this.#contractModel.getNaturalPerson({
         document: data.documentNumber,
         createdBy,
       });
       if (existNaturalPerson) throw new ConflictError('Ya existe una persona natural con ese número de documento.');
-      await this.#contractModel.createNaturalPerson({ data, createdBy });
+      await this.#contractModel.createNaturalPerson({ data: dataWithoutAnotherBank, createdBy });
       const redisKey = generateRedisKey('naturalPersonArray', createdBy);
       const contractorsKey = generateRedisKey('contractorsArray', createdBy);
       await redisClient.del(redisKey);
@@ -71,12 +75,16 @@ export class ContractService implements IContractService {
 
   async createJuridicalPerson({ data, createdBy }: { data: IJuridicalPersonEntity; createdBy: string }): Promise<void> {
     try {
+      let bank = data.bank;
+      if (data.bank === 'null' && data.anotherBank) bank = data.anotherBank;
+      const { anotherBank, ...dataWithoutAnotherBank } = { ...data, bank };
+
       const existJuridicalPerson = await this.#contractModel.getJuridicalPerson({
         document: data.businessDocumentNumber,
         createdBy,
       });
       if (existJuridicalPerson) throw new ConflictError('Ya existe una persona jurídica con ese NIT.');
-      await this.#contractModel.createJuridicalPerson({ data, createdBy });
+      await this.#contractModel.createJuridicalPerson({ data: dataWithoutAnotherBank, createdBy });
       const redisKey = generateRedisKey('juridicalPersonArray', createdBy);
       const contractorsKey = generateRedisKey('contractorsArray', createdBy);
       await redisClient.del(redisKey);
