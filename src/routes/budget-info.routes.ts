@@ -21,7 +21,7 @@ export const createBudgetInfoRouter = ({ budgetController, authMiddleware }: IBu
 
   /**
    * @swagger
-   * /budget-info/create-budget-info:
+   * /budget/create-budget-info:
    *   post:
    *     summary: Crear información de presupuesto
    *     description: Crea un nuevo presupuesto con validaciones de número de certificado y fechas. Solo usuarios autenticados pueden acceder.
@@ -36,8 +36,19 @@ export const createBudgetInfoRouter = ({ budgetController, authMiddleware }: IBu
    *         application/json:
    *           schema:
    *             $ref: '#/components/schemas/BudgetInformation'
+   *           example:
+   *             certificateNumber: "CERT-2025-001"
+   *             issuanceDate: "2025-05-21"
+   *             totalAssignedAmount: 1000000
+   *             rubros:
+   *               - name: "Rubro 1"
+   *                 code: "R1"
+   *                 assignedAmount: 500000
+   *               - name: "Rubro 2"
+   *                 code: "R2"
+   *                 assignedAmount: 500000
    *     responses:
-   *       200:
+   *       201:
    *         description: Información de presupuesto creada exitosamente
    *         content:
    *           application/json:
@@ -61,7 +72,7 @@ export const createBudgetInfoRouter = ({ budgetController, authMiddleware }: IBu
 
   /**
    * @swagger
-   * /budget-info/get-budget-info:
+   * /budget/get-budget-info:
    *   get:
    *     summary: Obtener información de presupuesto
    *     description: Obtiene la información de presupuestos filtrada opcionalmente por número de certificado. Solo usuarios autenticados pueden acceder.

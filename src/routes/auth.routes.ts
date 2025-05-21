@@ -34,6 +34,10 @@ export const createAuthRouter = ({ authController, authMiddleware }: AuthRouterD
    *         application/json:
    *           schema:
    *             $ref: '#/components/schemas/UserRegister'
+   *           example:
+   *             username: "usuario123"
+   *             email: "usuario@email.com"
+   *             password: "Password123$"
    *     responses:
    *       201:
    *         description: Usuario registrado exitosamente.
@@ -68,6 +72,9 @@ export const createAuthRouter = ({ authController, authMiddleware }: AuthRouterD
    *         application/json:
    *           schema:
    *             $ref: '#/components/schemas/UserLogin'
+   *           example:
+   *             email: "usuario@email.com"
+   *             password: "Password123$"
    *     responses:
    *       200:
    *         description: Inicio de sesión exitoso. Devuelve token de acceso y configura cookie con token de actualización.
@@ -100,6 +107,10 @@ export const createAuthRouter = ({ authController, authMiddleware }: AuthRouterD
    *         application/json:
    *           schema:
    *             $ref: '#/components/schemas/UserUpdate'
+   *           example:
+   *             username: "usuario123"
+   *             email: "nuevo@email.com"
+   *             password: "NuevoPassword123$"
    *     responses:
    *       200:
    *         description: Usuario actualizado exitosamente
@@ -139,6 +150,12 @@ export const createAuthRouter = ({ authController, authMiddleware }: AuthRouterD
    *         application/json:
    *           schema:
    *             $ref: '#/components/schemas/UserUpdateAsAdmin'
+   *           example:
+   *             username: "usuario123"
+   *             email: "nuevo@email.com"
+   *             password: "NuevoPassword123$"
+   *             role: "ADMIN"
+   *             isActive: true
    *     responses:
    *       200:
    *         description: Usuario actualizado exitosamente

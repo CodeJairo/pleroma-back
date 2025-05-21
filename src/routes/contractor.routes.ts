@@ -27,7 +27,7 @@ export const createContractRouter = ({ contractController, authMiddleware }: Con
 
   /**
    * @swagger
-   * /contractor/create-juridical-person:
+   * /contract/create-juridical-person:
    *   post:
    *     summary: Crear una persona jurídica
    *     description: Crea una persona jurídica. Solo usuarios autenticados pueden acceder.
@@ -41,8 +41,23 @@ export const createContractRouter = ({ contractController, authMiddleware }: Con
    *         application/json:
    *           schema:
    *             $ref: '#/components/schemas/JuridicalPerson'
+   *           example:
+   *             businessName: "Empresa S.A."
+   *             businessDocumentNumber: "900123456"
+   *             name: "Representante Legal"
+   *             documentType: "CC"
+   *             documentNumber: "1234567890"
+   *             expeditionAddress: "Bogotá"
+   *             birthDate: "1980-01-01"
+   *             genre: "M"
+   *             address: "Calle 123 #45-67"
+   *             phone: "3001234567"
+   *             email: "empresa@email.com"
+   *             bank: "Bancolombia"
+   *             accountType: "AHORROS"
+   *             bankAccountNumber: "1234567890"
    *     responses:
-   *       200:
+   *       201:
    *         description: Persona jurídica creada exitosamente
    *         content:
    *           application/json:
@@ -63,7 +78,7 @@ export const createContractRouter = ({ contractController, authMiddleware }: Con
 
   /**
    * @swagger
-   * /contractor/get-all-juridical-person:
+   * /contract/get-all-juridical-person:
    *   get:
    *     summary: Obtener todas las personas jurídicas
    *     description: Obtiene todas las personas jurídicas creadas por el usuario autenticado. Puede filtrarse por número de documento.
@@ -96,7 +111,7 @@ export const createContractRouter = ({ contractController, authMiddleware }: Con
 
   /**
    * @swagger
-   * /contractor/create-natural-person:
+   * /contract/create-natural-person:
    *   post:
    *     summary: Crear una persona natural
    *     description: Crea una persona natural. Solo usuarios autenticados pueden acceder.
@@ -110,8 +125,21 @@ export const createContractRouter = ({ contractController, authMiddleware }: Con
    *         application/json:
    *           schema:
    *             $ref: '#/components/schemas/NaturalPerson'
+   *           example:
+   *             name: "Juan Pérez"
+   *             documentType: "CC"
+   *             documentNumber: "1234567890"
+   *             expeditionAddress: "Bogotá"
+   *             birthDate: "1990-01-01"
+   *             genre: "M"
+   *             address: "Calle 45 #67-89"
+   *             phone: "3009876543"
+   *             email: "juan@email.com"
+   *             bank: "Davivienda"
+   *             accountType: "AHORROS"
+   *             bankAccountNumber: "9876543210"
    *     responses:
-   *       200:
+   *       201:
    *         description: Persona natural creada exitosamente
    *         content:
    *           application/json:
@@ -130,7 +158,7 @@ export const createContractRouter = ({ contractController, authMiddleware }: Con
 
   /**
    * @swagger
-   * /contractor/get-all-natural-person:
+   * /contract/get-all-natural-person:
    *   get:
    *     summary: Obtener todas las personas naturales
    *     description: Obtiene todas las personas naturales creadas por el usuario autenticado. Puede filtrarse por número de documento.
@@ -163,7 +191,7 @@ export const createContractRouter = ({ contractController, authMiddleware }: Con
 
   /**
    * @swagger
-   * /contractor/get-all-contractors:
+   * /contract/get-all-contractors:
    *   get:
    *     summary: Obtener todos los contratistas
    *     description: Obtiene todos los contratistas (personas naturales y jurídicas) creados por el usuario autenticado.
